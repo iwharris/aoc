@@ -2,13 +2,22 @@
   "name": "@iwharris/aoc",
   "version": "0.0.0",
   "description": "Advent of Code solutions",
-  "main": "dist/index.js",
+  "main": "dist/aoc.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "aoc": "./dist/aoc.js"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "aoc": "node dist/aoc.js",
+    "dev": "ts-node src/aoc.ts",
+    "build": "tsc",
+    "build:watch": "tsc -w",
+    "test": "jest",
+    "test:coverage": "jest --coverage"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/iwharris/aoc.git"
+    "url": "git://github.com/iwharris/aoc.git"
   },
   "keywords": [
     "adventofcode",
@@ -22,8 +31,13 @@
   },
   "homepage": "https://github.com/iwharris/aoc#readme",
   "devDependencies": {
+    "@types/jest": "^24.0.18",
     "@types/node": "^12.7.11",
+    "jest": "^24.9.0",
     "ts-node": "^8.4.1",
     "typescript": "^3.6.3"
+  },
+  "dependencies": {
+    "commander": "^3.0.2"
   }
 }
