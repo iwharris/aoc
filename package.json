@@ -1,5 +1,5 @@
 {
-  "name": "aoc",
+  "name": "@iwharris/aoc",
   "version": "0.0.0",
   "description": "Advent of Code solutions",
   "main": "dist/index.js",
