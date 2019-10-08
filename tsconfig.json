@@ -1,0 +1,26 @@
+{
+	"compilerOptions": {
+        "target": "es6",
+        "module": "commonjs",
+        "sourceMap": true,
+        "declaration": true,
+        "outDir": "dist",
+        "baseUrl": ".",
+        "resolveJsonModule": true,
+        "esModuleInterop": true,
+        "downlevelIteration": true,
+        "lib": ["es2016", "es2017", "dom"],
+      
+        "alwaysStrict": true,
+      
+        "strictNullChecks": true,
+        "strictBindCallApply": true,
+        "strictFunctionTypes": true,
+        "strictPropertyInitialization": true,
+        "incremental": true
+	},
+	"include": [
+		"src/**/*"
+	],
+	"exclude": []
+  }
