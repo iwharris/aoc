@@ -1,6 +1,8 @@
 import fs, { PathLike } from "fs";
 
-export function readInput(encoding: string = "utf8"): string[] {
+export type ChallengeInput = string[];
+
+export function readInput(encoding: string = "utf8"): ChallengeInput {
     const data = fs.readFileSync(0, encoding); // Read data from stdin
 
     return data

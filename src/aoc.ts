@@ -3,6 +3,7 @@ import { challenges, Solutions } from './challenge';
 
 import { version, description } from '../package.json';
 import { readInput } from './util/io';
+import { getName } from './util/helper';
 
 const DEFAULT_YEAR = '2018';
 
@@ -17,8 +18,6 @@ function normalizeChallengeId(id: string): string {
 }
 
 function handleList(command: commander.Command) {
-    const { year } = command;
-    
     const sortedSolutions = new Solutions(challenges).list();
 
     let currentYear = '';
@@ -35,7 +34,8 @@ function handleList(command: commander.Command) {
         
         const part1Str = solution.solvePart1 ? '[P1]' : '    ';
         const part2Str = solution.solvePart2 ? '[P2]' : '    ';
-        console.log(`${part1Str}${part2Str} ${id}: ${solution.name}`);
+
+        console.log(`${part1Str}${part2Str} ${id}: ${getName(solution)}`);
     });
 }
 

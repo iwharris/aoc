@@ -1,5 +1,3 @@
-import { parseNameFromDescription } from '../../util/helper';
-
 const description = `
 --- Day 1: Chronal Calibration ---
 "We've detected some temporal anomalies," one of Santa's Elves at the Temporal Anomaly Research and Detection Instrument Station tells you.
@@ -60,44 +58,45 @@ Here are other examples:
 +3, +3, +4, -2, -4 first reaches 10 twice.
 -6, +3, +8, +5, -6 first reaches 5 twice.
 +7, +7, -2, -7, -4 first reaches 14 twice.
-What is the first frequency your device reaches twice?
-`;
+What is the first frequency your device reaches twice?`;
 
 function solvePart1(inputLines: string[]): string {
-    return <any>inputLines.map(line => line.trim())
-        .reduce((acc, cur) => acc + Number(cur), 0);
+  return <any>(
+    inputLines
+      .map(line => line.trim())
+      .reduce((acc, cur) => acc + Number(cur), 0)
+  );
 }
-  
+
 function solvePart2(inputLines: string[]): string {
-    let currentFreq = 0;
-    const freqs = [currentFreq];
-    let loopAroundCount = 0;
-  
-    // Iterate forever until we find a duplicate frequency
-    while (loopAroundCount >= 0) {
-        for (let i = 0; i < inputLines.length; i += 1) {
-            const num = Number(inputLines[i]);
-            currentFreq += num;
-  
-            // Check if this freq has been encountered before - if so, return immediately
-            if (freqs.includes(currentFreq)) {
-                return currentFreq.toString();
-            }
-    
-            freqs.push(currentFreq);
-        }
-  
-        loopAroundCount += 1;
-        // console.debug(`Looping around ${loopAroundCount} times...`);
+  let currentFreq = 0;
+  const freqs = [currentFreq];
+  let loopAroundCount = 0;
+
+  // Iterate forever until we find a duplicate frequency
+  while (loopAroundCount >= 0) {
+    for (let i = 0; i < inputLines.length; i += 1) {
+      const num = Number(inputLines[i]);
+      currentFreq += num;
+
+      // Check if this freq has been encountered before - if so, return immediately
+      if (freqs.includes(currentFreq)) {
+        return currentFreq.toString();
+      }
+
+      freqs.push(currentFreq);
     }
-  
-    // If we reach this, we have never encountered a duplicate freq
-    throw new Error('Did not encounter a duplicate frequency.');
+
+    loopAroundCount += 1;
+    // console.debug(`Looping around ${loopAroundCount} times...`);
+  }
+
+  // If we reach this, we have never encountered a duplicate freq
+  throw new Error("Did not encounter a duplicate frequency.");
 }
 
 export default {
-    name: parseNameFromDescription(description),
-    description,
-    solvePart1,
-    solvePart2,
+  description,
+  solvePart1,
+  solvePart2,
 };

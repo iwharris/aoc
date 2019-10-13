@@ -1,5 +1,7 @@
-export function parseNameFromDescription(description: string) {
-    const matches = /^[\n -]*Day \d+:([\w\s]+)[ -]*\n/.exec(description);
-    if (!matches) throw new Error('wat');
+import { Solution } from "../challenge";
+
+export function getName(solution: Solution) {
+    const matches = /^[\n -]*Day \d+:([\w\s]+)[ -]*\n/.exec(solution.description);
+    if (!matches) throw new Error("Description is malformed");
     return matches[1].trim();
 }
