@@ -12,6 +12,8 @@
     "dev": "ts-node src/aoc.ts",
     "build": "tsc",
     "build:watch": "tsc -w",
+    "prettier": "prettier -c **/*.[jt]s",
+    "prettier:fix": "npm run prettier -- --write",
     "test": "jest",
     "test:coverage": "jest --coverage"
   },
@@ -34,6 +36,7 @@
     "@types/jest": "^24.0.18",
     "@types/node": "^12.7.11",
     "jest": "^24.9.0",
+    "prettier": "^1.18.2",
     "ts-node": "^8.4.1",
     "typescript": "^3.6.3"
   },

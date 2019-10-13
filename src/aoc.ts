@@ -1,6 +1,5 @@
 import commander from 'commander';
 import { challenges, Solutions } from './challenge';
-
 import { version, description } from '../package.json';
 import { readInput } from './util/io';
 import { getName } from './util/helper';
@@ -8,7 +7,7 @@ import { getName } from './util/helper';
 const DEFAULT_YEAR = '2018';
 
 function parseChallengeId(id: string): [string, string] {
-    const [year, day] = id.split('.', 2).map(val => Number(val).toString());
+    const [year, day] = id.split('.', 2).map((val) => Number(val).toString());
 
     return [year, day];
 }
@@ -22,7 +21,7 @@ function handleList(command: commander.Command) {
 
     let currentYear = '';
     sortedSolutions.forEach(([id, solution]) => {
-        const [y,d] = id.split('.');
+        const [y, d] = id.split('.');
         if (y !== currentYear) {
             if (currentYear) {
                 console.log('\n');
@@ -31,7 +30,7 @@ function handleList(command: commander.Command) {
             currentYear = y;
             console.group(currentYear);
         }
-        
+
         const part1Str = solution.solvePart1 ? '[P1]' : '    ';
         const part2Str = solution.solvePart2 ? '[P2]' : '    ';
 
@@ -54,15 +53,13 @@ function handleSolve(challengeId: string) {
     const results = solutions.solveChallenge(id, input);
 
     results.forEach((result: string | null, idx: number) => {
-        console.log(`Part ${idx+1}: ${result || ''}`);
-    })
+        console.log(`Part ${idx + 1}: ${result || ''}`);
+    });
 }
 
 function parseArgs(args: string[]): commander.Command {
     // Base script
-    commander
-        .version(version)
-        .description(description);
+    commander.version(version).description(description);
 
     const listCommand = commander
         .command('list')
@@ -72,7 +69,9 @@ function parseArgs(args: string[]): commander.Command {
 
     const infoCommand = commander
         .command('info <challengeId>')
-        .description('Prints info for a given challenge. Challenges are identified by YEAR.DAY, eg. 2019.2')
+        .description(
+            'Prints info for a given challenge. Challenges are identified by YEAR.DAY, eg. 2019.2'
+        )
         .action(handleInfo);
 
     const solveCommand = commander

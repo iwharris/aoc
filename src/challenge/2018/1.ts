@@ -61,42 +61,41 @@ Here are other examples:
 What is the first frequency your device reaches twice?`;
 
 function solvePart1(inputLines: string[]): string {
-  return <any>(
-    inputLines
-      .map(line => line.trim())
-      .reduce((acc, cur) => acc + Number(cur), 0)
-  );
+    return inputLines
+        .map((line) => line.trim())
+        .reduce((acc, cur) => acc + Number(cur), 0)
+        .toString();
 }
 
 function solvePart2(inputLines: string[]): string {
-  let currentFreq = 0;
-  const freqs = [currentFreq];
-  let loopAroundCount = 0;
+    let currentFreq = 0;
+    const freqs = [currentFreq];
+    let loopAroundCount = 0;
 
-  // Iterate forever until we find a duplicate frequency
-  while (loopAroundCount >= 0) {
-    for (let i = 0; i < inputLines.length; i += 1) {
-      const num = Number(inputLines[i]);
-      currentFreq += num;
+    // Iterate forever until we find a duplicate frequency
+    while (loopAroundCount >= 0) {
+        for (let i = 0; i < inputLines.length; i += 1) {
+            const num = Number(inputLines[i]);
+            currentFreq += num;
 
-      // Check if this freq has been encountered before - if so, return immediately
-      if (freqs.includes(currentFreq)) {
-        return currentFreq.toString();
-      }
+            // Check if this freq has been encountered before - if so, return immediately
+            if (freqs.includes(currentFreq)) {
+                return currentFreq.toString();
+            }
 
-      freqs.push(currentFreq);
+            freqs.push(currentFreq);
+        }
+
+        loopAroundCount += 1;
+        // console.debug(`Looping around ${loopAroundCount} times...`);
     }
 
-    loopAroundCount += 1;
-    // console.debug(`Looping around ${loopAroundCount} times...`);
-  }
-
-  // If we reach this, we have never encountered a duplicate freq
-  throw new Error("Did not encounter a duplicate frequency.");
+    // If we reach this, we have never encountered a duplicate freq
+    throw new Error('Did not encounter a duplicate frequency.');
 }
 
 export default {
-  description,
-  solvePart1,
-  solvePart2,
+    description,
+    solvePart1,
+    solvePart2,
 };
