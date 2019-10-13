@@ -16,12 +16,12 @@ function normalizeChallengeId(id: string): string {
     return parseChallengeId(id).join('.');
 }
 
-function handleList(command: commander.Command) {
+function handleList(_command: commander.Command) {
     const sortedSolutions = new Solutions(challenges).list();
 
     let currentYear = '';
     sortedSolutions.forEach(([id, solution]) => {
-        const [y, d] = id.split('.');
+        const [y] = id.split('.');
         if (y !== currentYear) {
             if (currentYear) {
                 console.log('\n');
