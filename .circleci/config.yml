@@ -22,16 +22,16 @@ jobs:
             # Download and cache dependencies
             - restore_cache:
                   keys:
-                      - v1-dependencies-{{ checksum "package.json" }}
+                      - dependency-cache-v2-{{ checksum "package-lock.json" }}
                       # fallback to using the latest cache if no exact match is found
-                      - v1-dependencies-
+                      - dependency-cache-v2-
 
             - run: npm install
 
             - save_cache:
                   paths:
                       - node_modules
-                  key: v1-dependencies-{{ checksum "package.json" }}
+                  key: dependency-cache-v2-{{ checksum "package-lock.json" }}
 
             # Check code formatting
             - run: npm run prettier -s
