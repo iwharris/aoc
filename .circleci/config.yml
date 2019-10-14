@@ -7,7 +7,7 @@ jobs:
     build:
         docker:
             # specify the version you desire here
-            - image: circleci/node:12
+            - image: circleci/node:8
 
             # Specify service dependencies here if necessary
             # CircleCI maintains a library of pre-built images
@@ -50,6 +50,10 @@ jobs:
             - store_artifacts:
                   path: /coverage/lcov-report
                   destination: coverage
+
+            - store_artifacts:
+                  path: /home/circleci/.npm/_logs/
+                  destination: npm_logs
 
             # upload coverage report
             - run: curl -s https://codecov.io/bash | bash -s -- -t "${CODECOV_TOKEN}"
