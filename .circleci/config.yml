@@ -51,10 +51,10 @@ jobs:
 
             # store test results
             - store_test_results:
-                  path: coverage
+                  path: /dist/test-results
 
             - store_artifacts:
-                  path: /coverage/lcov-report
+                  path: /dist/coverage/lcov-report
                   destination: coverage
 
             - store_artifacts:
