@@ -30,7 +30,7 @@ jobs:
                   name: Add .npmrc
                   command: |
                     echo "@iwharris:registry=https://npm.pkg.github.com/" > ~/.npmrc
-                    echo "//npm.pkg.github.com/:_authToken=\"$GITHUB_AUTH_TOKEN\"" >> ~/.npmrc
+                    echo "//npm.pkg.github.com/:_authToken=\"$GITHUB_TOKEN\"" >> ~/.npmrc
                     npm set @iwharris:registry https://npm.pkg.github.com
 
             - run: npm install
