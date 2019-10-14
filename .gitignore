@@ -62,3 +62,4 @@ typings/
 dist
 .editorconfig
 .vscode
+package-lock.json
