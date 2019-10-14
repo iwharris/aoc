@@ -1,11 +1,14 @@
 import c_18_1 from './2018/1';
 import c_18_2 from './2018/2';
+import c_18_3 from './2018/3';
+
 import { ChallengeInput } from 'src/util/io';
 
 // TODO populate these dynamically instead of hardcoding every import
 export const challenges: readonly [string, Solution][] = Object.entries({
     '2018.1': c_18_1,
     '2018.2': c_18_2,
+    '2018.3': c_18_3,
 });
 
 export type SolutionFunction = (lines: ChallengeInput) => string;
