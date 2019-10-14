@@ -1,51 +1,59 @@
 {
-  "name": "@iwharris/aoc",
-  "version": "0.0.0",
-  "description": "Advent of Code solutions",
-  "main": "dist/aoc.js",
-  "types": "./dist/index.d.ts",
-  "bin": {
-    "aoc": "./dist/aoc.js"
-  },
-  "scripts": {
-    "aoc": "node dist/aoc.js",
-    "dev": "ts-node src/aoc.ts",
-    "build": "tsc",
-    "build:watch": "tsc -w",
-    "prettier": "prettier -c **/*.[jt]s",
-    "prettier:fix": "npm run prettier -- --write",
-    "test": "jest",
-    "test:coverage": "jest --coverage"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/iwharris/aoc.git"
-  },
-  "keywords": [
-    "adventofcode",
-    "advent",
-    "typescript"
-  ],
-  "author": "Ian Harris",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/iwharris/aoc/issues"
-  },
-  "homepage": "https://github.com/iwharris/aoc#readme",
-  "devDependencies": {
-    "@types/jest": "^24.0.18",
-    "@types/node": "^12.7.11",
-    "@typescript-eslint/eslint-plugin": "^2.3.3",
-    "@typescript-eslint/parser": "^2.3.3",
-    "eslint": "^6.5.1",
-    "eslint-config-prettier": "^6.4.0",
-    "eslint-plugin-prettier": "^3.1.1",
-    "jest": "^24.9.0",
-    "prettier": "^1.18.2",
-    "ts-node": "^8.4.1",
-    "typescript": "^3.6.3"
-  },
-  "dependencies": {
-    "commander": "^3.0.2"
-  }
+    "name": "@iwharris/aoc",
+    "version": "0.0.0",
+    "description": "Advent of Code solutions",
+    "main": "dist/src/aoc.js",
+    "types": "./dist/src/index.d.ts",
+    "bin": {
+        "aoc": "./dist/src/aoc.js"
+    },
+    "scripts": {
+        "aoc": "node dist/src/aoc.js",
+        "dev": "ts-node src/aoc.ts",
+        "build": "tsc",
+        "build:watch": "tsc -w",
+        "prettier": "prettier -c \"{src,test}/**/*.[jt]s\"",
+        "prettier:fix": "npm run prettier -- --write",
+        "test": "jest",
+        "test:coverage": "npm run test -- --coverage"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/iwharris/aoc.git"
+    },
+    "keywords": [
+        "adventofcode",
+        "advent",
+        "typescript"
+    ],
+    "author": "Ian Harris",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/iwharris/aoc/issues"
+    },
+    "homepage": "https://github.com/iwharris/aoc#readme",
+    "devDependencies": {
+        "@types/jest": "^24.0.18",
+        "@types/node": "^12.7.11",
+        "@typescript-eslint/eslint-plugin": "^2.3.3",
+        "@typescript-eslint/parser": "^2.3.3",
+        "eslint": "^6.5.1",
+        "eslint-config-prettier": "^6.4.0",
+        "eslint-plugin-prettier": "^3.1.1",
+        "husky": "^3.0.9",
+        "jest": "^24.9.0",
+        "prettier": "^1.18.2",
+        "pretty-quick": "^2.0.0",
+        "ts-jest": "^24.1.0",
+        "ts-node": "^8.4.1",
+        "typescript": "^3.6.3"
+    },
+    "dependencies": {
+        "commander": "^3.0.2"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "pretty-quick --staged"
+        }
+    }
 }

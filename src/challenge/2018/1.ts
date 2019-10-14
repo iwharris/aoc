@@ -63,7 +63,8 @@ What is the first frequency your device reaches twice?`;
 function solvePart1(inputLines: string[]): string {
     return inputLines
         .map((line) => line.trim())
-        .reduce((acc, cur) => acc + Number(cur), 0).toString();
+        .reduce((acc, cur) => acc + Number(cur), 0)
+        .toString();
 }
 
 function solvePart2(inputLines: string[]): string {

@@ -1,4 +1,4 @@
-import { Solution } from '../challenge';
+import { Solution } from 'src/challenge';
 
 export function getName(solution: Solution) {
     const matches = /^[\n -]*Day \d+:([\w\s]+)[ -]*\n/.exec(solution.description);

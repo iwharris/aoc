@@ -1,5 +1,5 @@
 import c_18_1 from './2018/1';
-import { ChallengeInput } from '../util/io';
+import { ChallengeInput } from 'src/util/io';
 
 // TODO populate these dynamically instead of hardcoding every import
 export const challenges: readonly [string, Solution][] = Object.entries({
