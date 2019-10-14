@@ -1,6 +1,7 @@
 import c_18_1 from './2018/1';
 import c_18_2 from './2018/2';
 import c_18_3 from './2018/3';
+import c_18_4 from './2018/4';
 
 import { ChallengeInput } from 'src/util/io';
 
@@ -9,6 +10,7 @@ export const challenges: readonly [string, Solution][] = Object.entries({
     '2018.1': c_18_1,
     '2018.2': c_18_2,
     '2018.3': c_18_3,
+    '2018.4': c_18_4,
 });
 
 export type SolutionFunction = (lines: ChallengeInput) => string;
