@@ -29,9 +29,9 @@ jobs:
             - run:
                   name: Add .npmrc
                   command: |
-                    echo "@iwharris:registry=https://npm.pkg.github.com/" > ~/.npmrc
-                    echo "//npm.pkg.github.com/:_authToken=\"$GITHUB_TOKEN\"" >> ~/.npmrc
-                    npm set @iwharris:registry https://npm.pkg.github.com
+                      echo "@iwharris:registry=https://npm.pkg.github.com/" > ~/.npmrc
+                      echo "//npm.pkg.github.com/:_authToken=\"$GITHUB_TOKEN\"" >> ~/.npmrc
+                      npm set @iwharris:registry https://npm.pkg.github.com
 
             - run: npm install
 
@@ -42,6 +42,9 @@ jobs:
 
             # Check code formatting
             - run: npm run prettier -s
+
+            # Build typescript
+            - run: npm run build
 
             # run tests!
             - run: npm run test:coverage
