@@ -11,8 +11,8 @@ describe(getName(solution), () => {
     });
 
     describe('Part 2', () => {
-        it.skip('should solve part 2', () => {
-            // expect(solution.solvePart2(input, 2, 0)).toBe('15');
+        it('should solve part 2', () => {
+            expect(solution.solvePart2(input)).toBe('66');
         });
     });
 });

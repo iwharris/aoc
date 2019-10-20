@@ -29,7 +29,24 @@ C, which has 1 child node (D) and 1 metadata entry (2).
 D, which has 0 child nodes and 1 metadata entry (99).
 The first check done on the license file is to simply add up all of the metadata entries. In this example, that sum is 1+1+2+10+11+12+2+99=138.
 
-What is the sum of all metadata entries?`;
+What is the sum of all metadata entries?
+
+--- Part Two ---
+The second check is slightly more complicated: you need to find the value of the root node (A in the example above).
+
+The value of a node depends on whether it has child nodes.
+
+If a node has no child nodes, its value is the sum of its metadata entries. So, the value of node B is 10+11+12=33, and the value of node D is 99.
+
+However, if a node does have child nodes, the metadata entries become indexes which refer to those child nodes. A metadata entry of 1 refers to the first child node, 2 to the second, 3 to the third, and so on. The value of this node is the sum of the values of the child nodes referenced by the metadata entries. If a referenced child node does not exist, that reference is skipped. A child node can be referenced multiple time and counts each time it is referenced. A metadata entry of 0 does not refer to any child node.
+
+For example, again using the above nodes:
+
+Node C has one metadata entry, 2. Because node C has only one child node, 2 references a child node which does not exist, and so the value of node C is 0.
+Node A has three metadata entries: 1, 1, and 2. The 1 references node A's first child node, B, and the 2 references node A's second child node, C. Because node B has a value of 33 and node C has a value of 0, the value of node A is 33+33+0=66.
+So, in this example, the value of the root node is 66.
+
+What is the value of the root node?`;
 
 type Input = number[];
 type Header = [number, number];
@@ -39,6 +56,8 @@ interface Tree extends Iterable<Tree> {
     metadata: Metadata;
     children: Tree[];
 }
+
+const sumReducer = (accumulator: number, current: number) => accumulator + current;
 
 class NavigationSystemTree implements Tree {
     [Symbol.iterator](): Iterator<NavigationSystemTree, NavigationSystemTree> {
@@ -50,6 +69,20 @@ class NavigationSystemTree implements Tree {
     constructor(metadata: Metadata, children: NavigationSystemTree[]) {
         this.metadata = metadata;
         this.children = children;
+    }
+
+    value(): number {
+        if (!this.children.length) {
+            return this.metadata.reduce(sumReducer, 0);
+        } else {
+            return this.metadata
+                .map((m) => {
+                    const childTree = this.children[m - 1];
+
+                    return !childTree ? 0 : childTree.value();
+                })
+                .reduce(sumReducer);
+        }
     }
 
     *iterator(): Generator<NavigationSystemTree> {
@@ -95,20 +128,31 @@ function parseNode(input: number[]): NavigationSystemTree {
     return new NavigationSystemTree(metadata, children);
 }
 
-function solvePart1(lines: string[]): string {
-    const input = lines[0].split(' ').map((n) => parseInt(n));
+function parseInputToTree(lines: string[]): NavigationSystemTree {
+    const input: Input = lines[0].split(' ').map((n) => parseInt(n));
 
-    const tree = parseNode(input);
+    return parseNode(input);
+}
+
+function solvePart1(lines: string[]): string {
+    const tree = parseInputToTree(lines);
 
     const metadataSum = Array.from(tree)
         .map((t) => t.metadata)
         .reduce((accumulator: number[], metadata: number[]) => accumulator.concat(metadata), []) // flatten
-        .reduce((accumulator: number, current: number) => accumulator + current, 0);
+        .reduce(sumReducer, 0);
 
     return metadataSum.toString();
+}
+
+function solvePart2(lines: string[]): string {
+    const tree = parseInputToTree(lines);
+
+    return tree.value().toString();
 }
 
 export default {
     description,
     solvePart1,
+    solvePart2,
 };
