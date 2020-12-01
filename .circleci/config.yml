@@ -26,12 +26,12 @@ jobs:
                       # fallback to using the latest cache if no exact match is found
                       - dependency-cache-v2-
 
-            - run:
-                  name: Add .npmrc
-                  command: |
-                      echo "@iwharris:registry=https://npm.pkg.github.com/" > ~/.npmrc
-                      echo "//npm.pkg.github.com/:_authToken=\"$GITHUB_TOKEN\"" >> ~/.npmrc
-                      npm set @iwharris:registry https://npm.pkg.github.com
+            # - run:
+            #       name: Add .npmrc
+            #       command: |
+            #           echo "@iwharris:registry=https://npm.pkg.github.com/" > ~/.npmrc
+            #           echo "//npm.pkg.github.com/:_authToken=\"$GITHUB_TOKEN\"" >> ~/.npmrc
+            #           npm set @iwharris:registry https://npm.pkg.github.com
 
             - run: npm install
 
