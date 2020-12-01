@@ -1,5 +1,5 @@
 import { getName } from '../test-helper';
-import solution from '../../src/challenge/2018/1';
+import * as solution from '../../src/challenge/2018/1';
 
 const formatInput = (input: string): string[] => input.split(', ');
 

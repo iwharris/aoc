@@ -1,11 +1,11 @@
-import solution from '../../src/challenge/2018/2';
+import * as solution from '../../src/challenge/2018/2';
 import { getName } from '../test-helper';
 
 describe(getName(solution), () => {
     describe('Part 1', () => {
         it('should solve with simple inputs', () => {
             const input = ['abcdef', 'bababc', 'abbcde', 'abcccd', 'aabcdd', 'abcdee', 'ababab'];
-            expect(solution.solvePart1(input)).toBe(12);
+            expect(solution.solvePart1(input)).toBe('12');
         });
     });
 

@@ -1,6 +1,4 @@
-import { deepStrictEqual } from 'assert';
-
-const description = `
+export const description = `
 --- Day 7: The Sum of Its Parts ---
 You find yourself standing on a snow-covered coastline; apparently, you landed a little off course. The region is too hilly to see the North Pole from here, but you do spot some Elves that seem to be trying to unpack something that washed ashore. It's quite cold out, so you decide to risk creating a paradox by asking them for directions.
 
@@ -46,9 +44,9 @@ Each step takes 60 seconds plus an amount corresponding to its letter: A=1, B=2,
 To simplify things for the example, however, suppose you only have help from one Elf (a total of two workers) and that each step takes 60 fewer seconds (so that step A takes 1 second and step Z takes 26 seconds). Then, using the same instructions as above, this is how each second would be spent:
 
 Second   Worker 1   Worker 2   Done
-   0        C          .        
-   1        C          .        
-   2        C          .        
+   0        C          .
+   1        C          .
+   2        C          .
    3        A          F       C
    4        B          F       CA
    5        B          F       CA
@@ -259,27 +257,20 @@ function parseInput(lines: string[]): DependencyPair[] {
         .map((line) => /^Step (\w) must be finished before step (\w) can begin.$/.exec(line))
         .map((matches) => {
             if (!matches) throw new Error('Invalid input');
-            const [_ignore, first, second] = matches;
-            return [first, second];
+            return [matches[1], matches[2]];
         });
 }
 
-function solvePart1(lines: string[]): string {
+export function solvePart1(lines: string[]): string {
     const pairs = parseInput(lines);
     const graph = new DependencyGraph(pairs);
 
     return graph.solvePart1();
 }
 
-function solvePart2(lines: string[], workerCount: number = 5, baseTaskCost = 60): string {
+export function solvePart2(lines: string[], workerCount: number = 5, baseTaskCost = 60): string {
     const pairs = parseInput(lines);
     const scheduler = new TaskScheduler(pairs, workerCount, baseTaskCost);
 
     return scheduler.solvePart2();
 }
-
-export default {
-    description,
-    solvePart1,
-    solvePart2,
-};

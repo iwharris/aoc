@@ -1,4 +1,4 @@
-const description = `
+export const description = `
 --- Day 1: Chronal Calibration ---
 "We've detected some temporal anomalies," one of Santa's Elves at the Temporal Anomaly Research and Detection Instrument Station tells you.
 She sounded pretty worried when she called you down here. "At 500-year intervals into the past, someone has been changing Santa's history!"
@@ -60,14 +60,14 @@ Here are other examples:
 +7, +7, -2, -7, -4 first reaches 14 twice.
 What is the first frequency your device reaches twice?`;
 
-function solvePart1(inputLines: string[]): string {
+export function solvePart1(inputLines: string[]): string {
     return inputLines
         .map((line) => line.trim())
         .reduce((acc, cur) => acc + Number(cur), 0)
         .toString();
 }
 
-function solvePart2(inputLines: string[]): string {
+export function solvePart2(inputLines: string[]): string {
     let currentFreq = 0;
     const freqs = [currentFreq];
     let loopAroundCount = 0;
@@ -93,9 +93,3 @@ function solvePart2(inputLines: string[]): string {
     // If we reach this, we have never encountered a duplicate freq
     throw new Error('Did not encounter a duplicate frequency.');
 }
-
-export default {
-    description,
-    solvePart1,
-    solvePart2,
-};

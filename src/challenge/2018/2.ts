@@ -1,6 +1,6 @@
 import { zip } from '../../util/fp';
 
-const description = `
+export const description = `
 --- Day 2: Inventory Management System ---
 You stop falling through time, catch your breath, and check the screen on the device. "Destination reached. Current Year: 1518. Current
 Location: North Pole Utility Closet 83N10." You made it! Now, to find those anomalies.
@@ -84,16 +84,16 @@ function getCommonCharacters(str1: string, str2: string): string {
     );
 }
 
-function solvePart1(input: string[]): string {
+export function solvePart1(input: string[]): string {
     const counts = input.map(getLetterBucketsInString);
     const count2 = counts.filter((c) => hasBucketOfSize(c, 2)).length;
     const count3 = counts.filter((c) => hasBucketOfSize(c, 3)).length;
     const result = count2 * count3;
 
-    return <any>result;
+    return result.toString();
 }
 
-function solvePart2(input: string[]): string {
+export function solvePart2(input: string[]): string {
     let found1: string = '';
     let found2: string = '';
     for (let i = 0; i < input.length; i += 1) {
@@ -109,9 +109,3 @@ function solvePart2(input: string[]): string {
 
     return getCommonCharacters(found1, found2);
 }
-
-export default {
-    description,
-    solvePart1,
-    solvePart2,
-};

@@ -1,6 +1,6 @@
 import { Grid, Point } from '../../util/grid';
 
-const description = `
+export const description = `
 --- Day 6: Chronal Coordinates ---
 The device on your wrist beeps several times, and once again you feel like you're falling.
 
@@ -189,7 +189,7 @@ function aggregateCoordinates(grid: GridType): any[] {
     );
 }
 
-function solvePart1(input: string[]): string {
+export function solvePart1(input: string[]): string {
     const coords = input.map(parseCoordinate);
     const [maxX, maxY] = computeLargestPoints(coords);
 
@@ -217,7 +217,7 @@ function solvePart1(input: string[]): string {
     return Number(result).toString();
 }
 
-function solvePart2(input: string[], threshold: number = 10000): string {
+export function solvePart2(input: string[], threshold: number = 10000): string {
     const coords = input.map(parseCoordinate);
     const [maxX, maxY] = computeLargestPoints(coords);
 
@@ -233,9 +233,3 @@ function solvePart2(input: string[], threshold: number = 10000): string {
 
     return Number(result).toString();
 }
-
-export default {
-    description,
-    solvePart1,
-    solvePart2,
-};

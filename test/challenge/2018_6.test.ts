@@ -1,4 +1,4 @@
-import solution from '../../src/challenge/2018/6';
+import * as solution from '../../src/challenge/2018/6';
 import { getName } from '../test-helper';
 
 describe(getName(solution), () => {

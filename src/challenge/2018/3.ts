@@ -1,6 +1,6 @@
 import { Grid } from '../../util/grid';
 
-const description = `
+export const description = `
 --- Day 3: No Matter How You Slice It ---
 The Elves managed to locate the chimney-squeeze prototype fabric for Santa's suit (thanks to someone who helpfully wrote its box IDs on the
   wall of the warehouse in the middle of the night). Unfortunately, anomalies are still affecting them - nobody can even agree on how to cut
@@ -108,21 +108,21 @@ function markClaimsOnGrid(gridObject, claims) {
     return grid;
 }
 
-function getNumberOfClaimedPoints(grid, threshold) {
+function getNumberOfClaimedPoints(grid, threshold): number {
     return grid.reduce((acc, cellValue) => (cellValue >= threshold ? acc + 1 : acc), 0);
 }
 
-function solvePart1(input) {
+export function solvePart1(input) {
     const claims = parseLines(input);
     const { maxX: width, maxY: height } = computeGridSize(claims);
     const grid = new Grid(width + 1, height + 1, 0);
     markClaimsOnGrid(grid, claims);
     const result = getNumberOfClaimedPoints(grid, 2);
 
-    return result;
+    return result.toString();
 }
 
-function solvePart2(input) {
+export function solvePart2(input) {
     const claims = parseLines(input);
     const { maxX: w, maxY: h } = computeGridSize(claims);
     const grid = new Grid(w, h, 0);
@@ -153,11 +153,5 @@ function solvePart2(input) {
         }
     }
 
-    return result;
+    return result.toString();
 }
-
-export default {
-    description,
-    solvePart1,
-    solvePart2,
-};

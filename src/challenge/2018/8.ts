@@ -1,4 +1,4 @@
-const description = `
+export const description = `
 --- Day 8: Memory Maneuver ---
 The sleigh is much easier to pull than you'd expect for something its weight. Unfortunately, neither you nor the Elves know which way the North Pole is from here.
 
@@ -134,7 +134,7 @@ function parseInputToTree(lines: string[]): NavigationSystemTree {
     return parseNode(input);
 }
 
-function solvePart1(lines: string[]): string {
+export function solvePart1(lines: string[]): string {
     const tree = parseInputToTree(lines);
 
     const metadataSum = Array.from(tree)
@@ -145,14 +145,8 @@ function solvePart1(lines: string[]): string {
     return metadataSum.toString();
 }
 
-function solvePart2(lines: string[]): string {
+export function solvePart2(lines: string[]): string {
     const tree = parseInputToTree(lines);
 
     return tree.value().toString();
 }
-
-export default {
-    description,
-    solvePart1,
-    solvePart2,
-};

@@ -1,4 +1,4 @@
-const description = `
+export const description = `
 --- Day 4: Repose Record ---
 You've sneaked into another supply closet - this time, it's across from the prototype suit manufacturing lab. You need to sneak inside and
 fix the issues with the suit, but there's a guard stationed outside the lab, so this is as close as you can safely get.
@@ -187,7 +187,7 @@ function sleepiestMinuteComparator(g1, g2) {
     return g2.minuteMostAsleep - g1.minuteMostAsleep;
 }
 
-function solvePart1(input: string[]): string {
+export function solvePart1(input: string[]): string {
     const guardMap = input
         // parse into entry objects
         .map(parseEntryFromLine)
@@ -214,10 +214,10 @@ function solvePart1(input: string[]): string {
 
     const result = laziestGuard.id * bestMinute;
 
-    return <any>result;
+    return result.toString();
 }
 
-function solvePart2(input: string[]): string {
+export function solvePart2(input: string[]): string {
     // Gives incorrect answers in Node 10 but correct answers in Node 11?!
     const guardMap = input
         // parse into entry objects
@@ -242,11 +242,5 @@ function solvePart2(input: string[]): string {
 
     const result = sleepiestGuardAtMinute.id * sleepiestGuardAtMinute.minuteMostAsleep;
 
-    return <any>result;
+    return result.toString();
 }
-
-export default {
-    description,
-    solvePart1,
-    solvePart2,
-};

@@ -1,4 +1,4 @@
-import solution from '../../src/challenge/2018/3';
+import * as solution from '../../src/challenge/2018/3';
 import { getName } from '../test-helper';
 
 describe(getName(solution), () => {
@@ -6,13 +6,13 @@ describe(getName(solution), () => {
 
     describe('Part 1', () => {
         it('should solve part 1', () => {
-            expect(solution.solvePart1(input)).toBe(4);
+            expect(solution.solvePart1(input)).toBe('4');
         });
     });
 
     describe('Part 2', () => {
         it('should solve part 2', () => {
-            expect(solution.solvePart2(input)).toBe(3);
+            expect(solution.solvePart2(input)).toBe('3');
         });
     });
 });

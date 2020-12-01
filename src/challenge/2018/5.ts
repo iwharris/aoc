@@ -1,4 +1,4 @@
-const description = `
+export const description = `
 --- Day 5: Alchemical Reduction ---
 You've managed to sneak in to the prototype suit manufacturing lab. The Elves are making decent progress, but are still struggling with the
 suit's size reduction capabilities.
@@ -70,15 +70,15 @@ function reactPolymer(polymer) {
     return p;
 }
 
-function solvePart1(input: string[]): string {
+export function solvePart1(input: string[]): string {
     const [polymerString] = input;
 
     const reactedPolymerString = reactPolymer(polymerString);
 
-    return <any>reactedPolymerString.length;
+    return reactedPolymerString.length.toString();
 }
 
-function solvePart2(input: string[]): string {
+export function solvePart2(input: string[]): string {
     const [polymerString] = input;
 
     const reactants: any = 'abcdefghijklmnopqrstuvwxyz';
@@ -96,11 +96,5 @@ function solvePart2(input: string[]): string {
         resultingPolymerLengths[0]
     );
 
-    return <any>result;
+    return result.toString();
 }
-
-export default {
-    description,
-    solvePart1,
-    solvePart2,
-};
