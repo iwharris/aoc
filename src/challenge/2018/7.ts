@@ -142,7 +142,11 @@ class DependencyGraph {
         this.nodes.delete(task);
 
         this.nodes.forEach((deps) => {
-            if (deps.includes(task)) deps.splice(deps.findIndex((d) => d === task), 1);
+            if (deps.includes(task))
+                deps.splice(
+                    deps.findIndex((d) => d === task),
+                    1
+                );
         });
     }
 
