@@ -1,73 +1,45 @@
-import c_18_1 from './2018/1';
-import c_18_2 from './2018/2';
-import c_18_3 from './2018/3';
-import c_18_4 from './2018/4';
-import c_18_5 from './2018/5';
-import c_18_6 from './2018/6';
-import c_18_7 from './2018/7';
-import c_18_8 from './2018/8';
+import { glob } from 'glob';
+import util from 'util';
+import { ChallengeInput, Solution, SolutionMap } from 'src/types';
+import { parseId } from '../util/helper';
+import { importSolutionDynamically, parseIdFromPath } from '../util/io';
 
-import { ChallengeInput } from 'src/util/io';
+const globAsync = util.promisify(glob);
 
-// TODO populate these dynamically instead of hardcoding every import
-export const challenges: readonly [string, Solution][] = Object.entries({
-    '2018.1': c_18_1,
-    '2018.2': c_18_2,
-    '2018.3': c_18_3,
-    '2018.4': c_18_4,
-    '2018.5': c_18_5,
-    '2018.6': c_18_6,
-    '2018.7': c_18_7,
-    '2018.8': c_18_8,
-});
+export const getSolution = async (id: string): Promise<Solution> => {
+    const [year, day] = parseId(id);
+    const fullPath = `${__dirname}/${year}/${day}`;
+    return importSolutionDynamically(fullPath);
+};
 
-export type SolutionFunction = (lines: ChallengeInput) => string;
+export const getSolutions = async (): Promise<SolutionMap> => {
+    const solutionMap = {};
 
-export interface Solution {
-    description: string;
-    solvePart1?: SolutionFunction;
-    solvePart2?: SolutionFunction;
-}
+    const modules = await globAsync(`${__dirname}/*/*.[tj]s`);
 
-export class Solutions {
-    private solutions: Map<string, Solution>;
-
-    constructor(solutions: Iterable<readonly [string, Solution]>) {
-        this.solutions = new Map(solutions);
+    for (const modulePath of modules) {
+        const solution: Solution = await importSolutionDynamically(modulePath);
+        const id = parseIdFromPath(modulePath);
+        solutionMap[id] = solution;
     }
 
-    get(key: string): Solution {
-        const solution = this.solutions.get(key);
+    return solutionMap;
+};
 
-        if (!solution) throw new Error(`Solution ${key} not found`);
+export const getInfo = async (id: string): Promise<string> => {
+    const solution = await getSolution(id);
 
-        return solution;
-    }
+    return solution.description;
+};
 
-    list(): [string, Solution][] {
-        return Array.from(this.solutions.entries()).sort(([a], [b]) => Number(a) - Number(b));
-    }
+export const solveChallenge = async (
+    key: string,
+    input: ChallengeInput
+): Promise<(string | null)[]> => {
+    const solution = await getSolution(key);
 
-    info(key: string): string {
-        const solution = this.get(key);
-
-        return solution.description;
-    }
-
-    solveChallenge(key: string, input: ChallengeInput): (string | null)[] {
-        const solution = this.get(key);
-
-        return [
-            !!solution.solvePart1 ? solution.solvePart1(input) : null,
-            !!solution.solvePart2 ? solution.solvePart2(input) : null,
-        ];
-    }
-
-    // static async load(): Promise<Solutions> {
-    //     console.log('dirname', __dirname);
-    //     const directories = await readdirAsync(__dirname);
-    //     console.log(directories);
-
-    //     return new Solutions([['2018.1', c2018_1]]);
-    // }
-}
+    return [
+        !!solution.solvePart1 ? solution.solvePart1(input) : null,
+        !!solution.solvePart2 ? solution.solvePart2(input) : null,
+    ];
+};

@@ -1,23 +1,13 @@
 import commander from 'commander';
-import { challenges, Solutions } from './challenge';
+import { getSolutions, getInfo, solveChallenge } from './challenge';
 import { version, description } from '../package.json';
-import { readInput } from './util/io';
-import { getName } from './util/helper';
+import { readInputFromFile, readInputFromStdin } from './util/io';
+import { getName, normalizeId } from './util/helper';
+import { ChallengeInput } from './types';
 
-const DEFAULT_YEAR = '2018';
-
-function parseChallengeId(id: string): [string, string] {
-    const [year, day] = id.split('.', 2).map((val) => Number(val).toString());
-
-    return [year, day];
-}
-
-function normalizeChallengeId(id: string): string {
-    return parseChallengeId(id).join('.');
-}
-
-function handleList(_command: commander.Command) {
-    const sortedSolutions = new Solutions(challenges).list();
+const handleList = async () => {
+    const solutions = await getSolutions();
+    const sortedSolutions = Object.entries(solutions).sort(([a], [b]) => Number(a) - Number(b));
 
     let currentYear = '';
     sortedSolutions.forEach(([id, solution]) => {
@@ -36,54 +26,61 @@ function handleList(_command: commander.Command) {
 
         console.log(`${part1Str}${part2Str} ${id}: ${getName(solution)}`);
     });
-}
+};
 
-function handleInfo(challengeId: string) {
-    const id = normalizeChallengeId(challengeId);
-    const solutions = new Solutions(challenges);
-    const info = solutions.info(id);
+const handleInfo = async (challengeId: string): Promise<void> => {
+    const info = await getInfo(challengeId);
 
     console.log(info);
-}
+};
 
-function handleSolve(challengeId: string) {
-    const id = normalizeChallengeId(challengeId);
-    const input = readInput();
-    const solutions = new Solutions(challenges);
-    const results = solutions.solveChallenge(id, input);
+const handleSolve = async (challengeId: string, command: commander.Command): Promise<void> => {
+    const id = normalizeId(challengeId);
+
+    const input: ChallengeInput = command.inputFile
+        ? await readInputFromFile(command.inputFile)
+        : readInputFromStdin();
+
+    const results = await solveChallenge(id, input);
 
     results.forEach((result: string | null, idx: number) => {
         console.log(`Part ${idx + 1}: ${result || ''}`);
     });
-}
+};
 
-function parseArgs(args: string[]): commander.Command {
+const parseArgs = (args: string[]) => {
     // Base script
     commander.version(version).description(description);
 
-    const listCommand = commander
+    commander
         .command('list')
         .description('Lists the implemented solutions')
-        .option('-y, --year <year>', 'Restricts challenges by year', DEFAULT_YEAR)
+        .option('-y, --year <year>', 'Restricts challenges by year, eg. -y 2018')
         .action(handleList);
 
-    const infoCommand = commander
+    commander
         .command('info <challengeId>')
         .description(
             'Prints info for a given challenge. Challenges are identified by YEAR.DAY, eg. 2019.2'
         )
         .action(handleInfo);
 
-    const solveCommand = commander
+    commander
         .command('solve <challengeId>')
         .description('Solves a challenge using input from stdin. Prints solutions to stdout.')
+        .option('-i, --input-file <inputFile>', 'Input file (alternative to stdin)')
         .action(handleSolve);
 
-    return commander.parse(args);
-}
+    return commander.parseAsync(args);
+};
 
-function main() {
-    parseArgs(process.argv);
-}
+const main = async () => {
+    await parseArgs(process.argv);
+};
 
-main();
+main()
+    .then(() => process.exit(0))
+    .catch((err) => {
+        console.error(err);
+        process.exit(1);
+    });
