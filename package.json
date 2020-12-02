@@ -17,6 +17,11 @@
         "test": "jest",
         "test:coverage": "jest --coverage"
     },
+    "husky": {
+        "hooks": {
+            "pre-commit": "npm run -s prettier"
+        }
+    },
     "repository": {
         "type": "git",
         "url": "git://github.com/iwharris/aoc.git"
@@ -41,6 +46,7 @@
         "@typescript-eslint/eslint-plugin": "^2.34.0",
         "eslint": "^6.8.0",
         "eslint-plugin-prettier": "^3.1.4",
+        "husky": "^4.3.0",
         "jest": "^26.6.3",
         "prettier": "^1.19.1",
         "ts-jest": "^26.4.4",
