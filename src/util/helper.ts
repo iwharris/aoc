@@ -1,7 +1,8 @@
 import { Solution } from 'src/types';
 
 export const getName = (solution: Solution): string => {
-    if (!solution.description) throw new Error(`Solution is missing a description: ${solution}`);
+    if (!solution.description)
+        throw new Error(`Solution is missing a description: ${JSON.stringify(solution)}`);
     const matches = /^[\n -]*Day \d+:([\w\s]+)[ -]*\n/.exec(solution.description);
 
     if (!matches) {

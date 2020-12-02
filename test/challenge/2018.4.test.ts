@@ -1,7 +1,9 @@
-import * as solution from '../../src/challenge/2018/4';
-import { getName } from '../test-helper';
+import { Solution } from '../../src/challenge/2018.4';
+import { testName } from '../test-helper';
 
-describe(getName(solution), () => {
+const solution = new Solution();
+
+describe(testName(solution), () => {
     const input = [
         '[1518-11-01 00:00] Guard #10 begins shift',
         '[1518-11-01 00:05] falls asleep',

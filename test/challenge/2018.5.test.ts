@@ -1,7 +1,9 @@
-import * as solution from '../../src/challenge/2018/5';
-import { getName } from '../test-helper';
+import { Solution } from '../../src/challenge/2018.5';
+import { testName } from '../test-helper';
 
-describe(getName(solution), () => {
+const solution = new Solution();
+
+describe(testName(solution), () => {
     const input = ['dabAcCaCBAcCcaDA'];
 
     describe('Part 1', () => {

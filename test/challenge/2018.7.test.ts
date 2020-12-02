@@ -1,7 +1,9 @@
-import * as solution from '../../src/challenge/2018/7';
-import { getName } from '../test-helper';
+import { Solution } from '../../src/challenge/2018.7';
+import { testName } from '../test-helper';
 
-describe(getName(solution), () => {
+const solution = new Solution();
+
+describe(testName(solution), () => {
     const input = [
         'Step C must be finished before step A can begin.',
         'Step C must be finished before step F can begin.',

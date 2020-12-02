@@ -2,14 +2,14 @@
     "name": "@iwharris/aoc",
     "version": "0.0.0",
     "description": "Advent of Code solutions",
-    "main": "dist/src/aoc.js",
+    "main": "dist/src/index.js",
     "types": "./dist/src/index.d.ts",
     "bin": {
-        "aoc": "./dist/src/aoc.js"
+        "aoc": "./dist/src/index.js"
     },
     "scripts": {
-        "aoc": "node dist/src/aoc.js",
-        "dev": "ts-node src/aoc.ts",
+        "aoc": "node dist/src/index.js",
+        "dev": "ts-node src/index.ts",
         "build": "tsc",
         "build:watch": "tsc -w",
         "prettier": "prettier --check {src,test}/**/*.[jt]s",

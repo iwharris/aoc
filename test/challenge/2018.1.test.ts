@@ -1,9 +1,11 @@
-import { getName } from '../test-helper';
-import * as solution from '../../src/challenge/2018/1';
+import { testName } from '../test-helper';
+import { Solution } from '../../src/challenge/2018.1';
 
 const formatInput = (input: string): string[] => input.split(', ');
 
-describe(getName(solution), () => {
+const solution = new Solution();
+
+describe(testName(solution), () => {
     describe('Part 1', () => {
         it('should solve with simple inputs', () => {
             expect(solution.solvePart1(formatInput('+1, -2, +3, +1'))).toBe('3');
