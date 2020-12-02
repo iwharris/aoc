@@ -1,3 +1,4 @@
+import { countSubstringOccurrences } from '../util/string';
 import { BaseSolution, Input } from '../solution';
 
 export class Solution extends BaseSolution {
@@ -27,9 +28,8 @@ export class Solution extends BaseSolution {
         const policies = lines.map(parseLine);
 
         const validPasswords = policies.filter(({ min, max, letter, pass }) => {
-            const match = pass.match(new RegExp(letter, 'g')) || [];
-            if (!match) return false;
-            return match.length >= min && match.length <= max;
+            const count = countSubstringOccurrences(pass, letter);
+            return count >= min && count <= max;
         });
 
         return validPasswords.length.toString();
