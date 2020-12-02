@@ -1,27 +1,21 @@
 export { Input } from './types';
 
 import { Input, Solution } from './types';
-import { getName, parseId } from './util/helper';
-import { getIdFromPath } from './util/io';
+import { NotImplementedError } from './util/error';
+import { getName,  } from './util/helper';
 
-export abstract class BaseSolution implements Solution {
-    public abstract readonly description: string;
-    public abstract solvePart1(lines: Input): string;
-    public abstract solvePart2(lines: Input): string;
+export class BaseSolution implements Solution {
+    public readonly description: string = '';
 
-    get id(): string {
-        return getIdFromPath(__filename);
+    solvePart1(lines: Input): string {
+        throw new NotImplementedError(`solvePart1() is not implemented`);
+    }
+
+    solvePart2(lines: Input): string {
+        throw new NotImplementedError(`solvePart2() is not implemented`);
     }
 
     get name(): string {
         return getName(this);
-    }
-
-    get year(): number {
-        return parseId(this.id)[0];
-    }
-
-    get day(): number {
-        return parseId(this.id)[1];
     }
 }

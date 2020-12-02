@@ -2,10 +2,11 @@ import commander from 'commander';
 import { glob } from 'glob';
 import util from 'util';
 import { version, description } from '../package.json';
-import { readInputFromFile, readInputFromStdin } from './util/io';
+import { getIdFromPath, readInputFromFile, readInputFromStdin } from './util/io';
 import { parseId, normalizeId } from './util/helper';
 import { Input, Solution, SolutionMap } from './types';
 import { importSolutionDynamically } from './util/io';
+import { NotImplementedError } from './util/error';
 
 const globAsync = util.promisify(glob);
 
@@ -22,7 +23,7 @@ const getSolutions = async (): Promise<SolutionMap> => {
 
     for (const modulePath of modules) {
         const solution: Solution = await importSolutionDynamically(modulePath);
-        solutionMap[solution.id] = solution;
+        solutionMap[getIdFromPath(modulePath)] = solution;
     }
 
     return solutionMap;
@@ -30,12 +31,13 @@ const getSolutions = async (): Promise<SolutionMap> => {
 
 const handleList = async () => {
     const solutions = await getSolutions();
-    const sortedSolutions = Object.entries(solutions).sort(([a], [b]) => Number(a) - Number(b));
+    const sortedSolutions = Object.entries(solutions).sort(
+        ([id1], [id2]) => Number(id1) - Number(id2)
+    );
 
-    let currentYear = '';
+    let currentYear: number = -1;
     sortedSolutions.forEach(([id, solution]) => {
-        console.log(solution);
-        const [y] = id.split('.');
+        const y = parseInt(id.split('.')[0]);
         if (y !== currentYear) {
             if (currentYear) {
                 console.log('\n');
@@ -67,10 +69,19 @@ const handleSolve = async (challengeId: string, command: commander.Command): Pro
 
     const solution = await getSolution(id);
 
-    const results = [
-        !!solution.solvePart1 ? solution.solvePart1(input) : null,
-        !!solution.solvePart2 ? solution.solvePart2(input) : null,
+    const callbacks = [
+        () => (!!solution.solvePart1 ? solution.solvePart1(input) : null),
+        () => (!!solution.solvePart2 ? solution.solvePart2(input) : null),
     ];
+
+    const results = callbacks.map((callback) => {
+        try {
+            return callback();
+        } catch (err) {
+            if (err instanceof NotImplementedError) return null;
+            else throw err;
+        }
+    });
 
     results.forEach((result: string | null, idx: number) => {
         console.log(`Part ${idx + 1}: ${result || ''}`);
