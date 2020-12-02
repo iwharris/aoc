@@ -2,7 +2,7 @@ import commander from 'commander';
 import { glob } from 'glob';
 import util from 'util';
 import { version, description } from '../package.json';
-import { getIdFromPath, readInputFromFile, readInputFromStdin } from './util/io';
+import { DEFAULT_ENCODING, getIdFromPath, readInputFromFile, readInputFromStdin } from './util/io';
 import { parseId, normalizeId } from './util/helper';
 import { Input, Solution, SolutionMap } from './types';
 import { importSolutionDynamically } from './util/io';
@@ -63,11 +63,13 @@ const handleInfo = async (challengeId: string): Promise<void> => {
 };
 
 const handleSolve = async (challengeId: string, command: commander.Command): Promise<void> => {
+    const { encoding } = command;
+
     const id = normalizeId(challengeId);
 
     const input: Input = command.inputFile
-        ? await readInputFromFile(command.inputFile)
-        : readInputFromStdin();
+        ? await readInputFromFile(command.inputFile, encoding)
+        : readInputFromStdin(encoding);
 
     const solution = await getSolution(id);
 
@@ -111,6 +113,11 @@ const parseArgs = (args: string[]) => {
         .command('solve <challengeId>')
         .description('Solves a challenge using input from stdin. Prints solutions to stdout.')
         .option('-i, --input-file <inputFile>', 'Input file (alternative to stdin)')
+        .option(
+            '-e, --encoding <encoding>',
+            'Optional encoding for the input data',
+            DEFAULT_ENCODING
+        )
         .action(handleSolve);
 
     return commander.parseAsync(args);

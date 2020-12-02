@@ -2,13 +2,15 @@ import { readFileSync } from 'fs';
 import fs from 'fs';
 import { Input, Solution } from '../types';
 
+export const DEFAULT_ENCODING = 'utf8';
+
 const parseInput = (rawInput: string): Input =>
     rawInput
         .split('\n') // Split data on newlines
         .map((str: string) => str.trim()) // Trim whitespace
         .filter(Boolean); // Omit empty (falsy) lines
 
-export const readInputFromStdin = (encoding: string = 'utf8'): Input => {
+export const readInputFromStdin = (encoding: string = DEFAULT_ENCODING): Input => {
     const data = readFileSync(0, encoding); // Read data from stdin
 
     return parseInput(data);
@@ -16,7 +18,7 @@ export const readInputFromStdin = (encoding: string = 'utf8'): Input => {
 
 export const readInputFromFile = async (
     path: string,
-    encoding: string = 'utf8'
+    encoding: string = DEFAULT_ENCODING
 ): Promise<Input> => {
     const data = await fs.promises.readFile(path, { encoding });
 
