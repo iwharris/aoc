@@ -2,7 +2,7 @@ export { Input } from './types';
 
 import { Input, Solution } from './types';
 import { NotImplementedError } from './util/error';
-import { getName,  } from './util/helper';
+import { getName } from './util/helper';
 
 export class BaseSolution implements Solution {
     public readonly description: string = '';
