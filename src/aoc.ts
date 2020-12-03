@@ -82,7 +82,8 @@ const handleSolve = async (challengeId: string, command: commander.Command): Pro
         try {
             return callback();
         } catch (err) {
-            if (err instanceof NotImplementedError) return null;
+            if (err instanceof NotImplementedError || /Method not implemented/.test(err.message))
+                return null;
             else throw err;
         }
     });
