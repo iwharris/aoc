@@ -1,4 +1,4 @@
-import { Solution } from 'src/types';
+import { Solution } from '../types';
 
 export const getName = (solution: Solution): string => {
     if (!solution.description)
