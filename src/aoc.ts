@@ -4,7 +4,7 @@ import util from 'util';
 import { version, description } from '../package.json';
 import { DEFAULT_ENCODING, getIdFromPath, readInputFromFile, readInputFromStdin } from './util/io';
 import { parseId, normalizeId } from './util/helper';
-import { Input, Solution, SolutionMap } from './types';
+import { Solution, SolutionMap } from './types';
 import { importSolutionDynamically } from './util/io';
 import { NotImplementedError } from './util/error';
 
@@ -67,15 +67,17 @@ const handleSolve = async (challengeId: string, command: commander.Command): Pro
 
     const id = normalizeId(challengeId);
 
-    const input: Input = command.inputFile
+    const rawInput = command.inputFile
         ? await readInputFromFile(command.inputFile, encoding)
         : readInputFromStdin(encoding);
 
     const solution = await getSolution(id);
 
+    const parsedInput = solution.parseInput(rawInput);
+
     const callbacks = [
-        () => (!!solution.solvePart1 ? solution.solvePart1(input) : null),
-        () => (!!solution.solvePart2 ? solution.solvePart2(input) : null),
+        () => (!!solution.solvePart1 ? solution.solvePart1(parsedInput) : null),
+        () => (!!solution.solvePart2 ? solution.solvePart2(parsedInput) : null),
     ];
 
     const results = callbacks.map((callback) => {

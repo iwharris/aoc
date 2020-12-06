@@ -19,4 +19,9 @@ export interface Solution {
 
     /** Solution to Part 2 of the challenge */
     solvePart2?: SolutionFunction;
+
+    /** Optional callback to parse raw input */
+    parseInput: InputParserFunction;
 }
+
+export type InputParserFunction = (input: string) => Input;

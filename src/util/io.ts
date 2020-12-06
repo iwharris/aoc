@@ -1,28 +1,22 @@
 import { readFileSync } from 'fs';
 import fs from 'fs';
-import { Input, Solution } from '../types';
+import { Solution } from '../types';
 
 export const DEFAULT_ENCODING = 'utf8';
 
-const parseInput = (rawInput: string): Input =>
-    rawInput
-        .split('\n') // Split data on newlines
-        .map((str: string) => str.trim()) // Trim whitespace
-        .filter(Boolean); // Omit empty (falsy) lines
-
-export const readInputFromStdin = (encoding: string = DEFAULT_ENCODING): Input => {
+export const readInputFromStdin = (encoding: string = DEFAULT_ENCODING): string => {
     const data = readFileSync(0, encoding); // Read data from stdin
 
-    return parseInput(data);
+    return data;
 };
 
 export const readInputFromFile = async (
     path: string,
     encoding: string = DEFAULT_ENCODING
-): Promise<Input> => {
+): Promise<string> => {
     const data = await fs.promises.readFile(path, { encoding });
 
-    return parseInput(data.toString());
+    return data.toString();
 };
 
 export const importSolutionDynamically = async (path: string): Promise<Solution> => {

@@ -1,10 +1,11 @@
 import { Solution } from '../../src/challenge/2020.3';
-import { parse, testName } from '../test-helper';
+import { parseInput } from '../../src/util/parser';
+import { testName } from '../test-helper';
 
 const solution = new Solution();
 
 describe(testName(solution), () => {
-    const input = parse(`
+    const input = parseInput(`
     ..##.......
     #...#...#..
     .#....#..#.
