@@ -133,7 +133,7 @@ export class Solution extends BaseSolution {
 
         // Count cells with a truthy value (ie they are within the region)
         const result = grid.reduce(
-            (count: number, currentPoint: Point) => (currentPoint ? count + 1 : count),
+            (count: number, currentIndex: number) => (currentIndex ? count + 1 : count),
             0
         );
 
@@ -157,7 +157,7 @@ function computeManhattanDistance([x1, y1], [x2, y2]) {
 
 function populateCellDistancesToCoords(g: GridType, coords: Point[]): void {
     const grid = g;
-    const gridPointGenerator = grid.rectPointGenerator(0, 0, grid.width, grid.height);
+    const gridPointGenerator = grid.rectIndexGenerator(0, 0, grid.width, grid.height);
 
     let gridPoint = gridPointGenerator.next();
     while (!gridPoint.done) {
@@ -186,7 +186,7 @@ function populateCellsWithinDistanceOfCoords(
     distanceThreshold: number
 ) {
     const grid = g;
-    const gridPointGenerator = grid.rectPointGenerator(0, 0, grid.width, grid.height);
+    const gridPointGenerator = grid.rectIndexGenerator(0, 0, grid.width, grid.height);
 
     let gridPoint = gridPointGenerator.next();
     while (!gridPoint.done) {
@@ -207,14 +207,14 @@ function populateCellsWithinDistanceOfCoords(
 function computeDisqualifiedCoordinates(grid: GridType): number[] {
     const disqualified = {};
 
-    const gridEdgePointGenerator = grid.edgePointGenerator();
-    let edgePoint = gridEdgePointGenerator.next();
-    while (!edgePoint.done) {
-        const coordId = grid.grid[edgePoint.value];
+    const gridEdgeIndexGenerator = grid.edgeIndexGenerator();
+    let edgeIndex = gridEdgeIndexGenerator.next();
+    while (!edgeIndex.done) {
+        const coordId = grid.grid[edgeIndex.value];
         if (coordId >= 0) {
             disqualified[coordId] = true;
         }
-        edgePoint = gridEdgePointGenerator.next();
+        edgeIndex = gridEdgeIndexGenerator.next();
     }
 
     return Object.keys(disqualified).map(Number);

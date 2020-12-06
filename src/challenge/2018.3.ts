@@ -83,7 +83,7 @@ export class Solution extends BaseSolution {
             const claim = claims[i];
             const { x, y, width, height } = claim;
 
-            const gridPOintsGenerator = grid.rectPointGenerator(x, y, width, height);
+            const gridPOintsGenerator = grid.rectIndexGenerator(x, y, width, height);
 
             let isUncontestedClaim = true;
             let point = gridPOintsGenerator.next();
@@ -143,7 +143,7 @@ function markClaimsOnGrid(gridObject, claims) {
     claims.forEach((claim) => {
         const { x, y, width, height } = claim;
 
-        const gridPointsGenerator = grid.rectPointGenerator(x, y, width, height);
+        const gridPointsGenerator = grid.rectIndexGenerator(x, y, width, height);
         let point = gridPointsGenerator.next();
 
         while (!point.done) {
