@@ -58,38 +58,26 @@ export class Solution extends BaseSolution {
 
     solvePart1(lines: Input): string {
         const grid = parseGrid(lines);
-
-        const isDone = (y: number) => y >= grid.height;
-        const translateCoords = ([x, y]: Point): Point => [x % grid.width, y];
         const slope: Vector2D = [3, 1]; // right 3, down 1
-        let x = 0;
-        let y = 0;
-        const visited: boolean[] = [];
-        while (!isDone(y)) {
-            const newCoords = translateCoords([x, y]);
-            x = newCoords[0];
-            y = newCoords[1];
 
-            const generator = grid.linePointGenerator(slope, [x, y]);
-
-            // iterate thru generator until done...
-            for (const point of Array.from(generator)) {
-                x += slope[0];
-                y += slope[1];
-                visited.push(grid.getValue(point[0], point[1]));
-            }
-
-            // now the next point will be "out of bounds" - manually add slope to calculate next
-            // x += slope[0];
-            // y += slope[1];
-        }
-
-        // done - now count the number of trees we 'hit'
-        return visited.filter(Boolean).length.toString();
+        return computeTreeEncountersForSlope(grid, slope).toString();
     }
 
     solvePart2(lines: Input): string {
-        return '';
+        const grid = parseGrid(lines);
+        const slopes: Vector2D[] = [
+            [1, 1],
+            [3, 1],
+            [5, 1],
+            [7, 1],
+            [1, 2],
+        ];
+
+        const values = slopes.map((s) => computeTreeEncountersForSlope(grid, s));
+
+        const product = values.reduce((acc, v) => acc * v, 1);
+
+        return product.toString();
     }
 }
 
@@ -105,4 +93,29 @@ const parseGrid = (lines: Input): Grid<boolean> => {
         }
     }
     return grid;
+};
+
+const computeTreeEncountersForSlope = (grid: Grid<boolean>, slope: Vector2D): number => {
+    const isDone = (y: number) => y >= grid.height;
+    const translateCoords = ([x, y]: Point): Point => [x % grid.width, y];
+    let x = 0;
+    let y = 0;
+    const visited: boolean[] = [];
+    while (!isDone(y)) {
+        const newCoords = translateCoords([x, y]);
+        x = newCoords[0];
+        y = newCoords[1];
+
+        const generator = grid.linePointGenerator(slope, [x, y]);
+
+        // iterate thru generator until done...
+        for (const point of Array.from(generator)) {
+            x += slope[0];
+            y += slope[1];
+            visited.push(grid.getValue(point[0], point[1]));
+        }
+    }
+
+    // done - now count the number of trees we 'hit'
+    return visited.filter(Boolean).length;
 };
