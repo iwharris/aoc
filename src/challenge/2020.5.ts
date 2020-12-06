@@ -53,7 +53,7 @@ export class Solution extends BaseSolution {
     `;
 
     solvePart1(lines: Input): string {
-        const highestSeatId = max(lines.map((line) => computeSeat(line).id));
+        const highestSeatId = max(lines.map((line) => computeSeat(line).id)) || -Infinity;
 
         return highestSeatId.toString();
     }
