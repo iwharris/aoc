@@ -8,6 +8,8 @@ import { Solution, SolutionMap } from './types';
 import { importSolutionDynamically } from './util/io';
 import { NotImplementedError } from './util/error';
 
+/* eslint-disable no-console */
+
 const globAsync = util.promisify(glob);
 
 const getSolution = async (id: string): Promise<Solution> => {

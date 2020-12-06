@@ -117,7 +117,7 @@ const parseGroups = (lines: Input): Answers[][] => {
         })
         .filter((e) => e.length > 0)
         .map((group) => {
-            console.log(`group:`, group);
+            // console.log(`group:`, group);
             return group.map((person) => {
                 return Array.from(person).reduce<Answers>((prev, cur) => {
                     prev.add(cur);
