@@ -7,3 +7,7 @@ export const max = (array: number[]): number =>
 
 export const min = (array: number[]): number =>
     array.reduce((prev, cur) => (cur < prev ? cur : prev), Infinity);
+
+export const product = (array: number[]): number => array.reduce((prev, cur) => prev * cur, 1);
+
+export const sum = (array: number[]): number => array.reduce((prev, cur) => prev + cur, 0);
