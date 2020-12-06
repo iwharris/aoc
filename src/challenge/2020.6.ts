@@ -1,6 +1,7 @@
 import { BaseSolution, Input } from '../solution';
 import { sum } from '../util/fp';
 import { parseInput } from '../util/parser';
+import { intersectMany, unionMany } from '../util/set';
 
 export class Solution extends BaseSolution {
     public description = `
@@ -44,6 +45,40 @@ export class Solution extends BaseSolution {
     In this example, the sum of these counts is 3 + 3 + 3 + 1 + 1 = 11.
 
     For each group, count the number of questions to which anyone answered "yes". What is the sum of those counts?
+
+    --- Part Two ---
+    As you finish the last group's customs declaration, you notice that you misread one word in the instructions:
+
+    You don't need to identify the questions to which anyone answered "yes"; you need to identify the questions to which everyone answered "yes"!
+
+    Using the same example as above:
+
+    abc
+
+    a
+    b
+    c
+
+    ab
+    ac
+
+    a
+    a
+    a
+    a
+
+    b
+
+    This list represents answers from five groups:
+
+    In the first group, everyone (all 1 person) answered "yes" to 3 questions: a, b, and c.
+    In the second group, there is no question to which everyone answered "yes".
+    In the third group, everyone answered yes to only 1 question, a. Since some people did not answer "yes" to b or c, they don't count.
+    In the fourth group, everyone answered yes to only 1 question, a.
+    In the fifth group, everyone (all 1 person) answered "yes" to 1 question, b.
+    In this example, the sum of these counts is 3 + 0 + 1 + 1 + 1 = 6.
+
+    For each group, count the number of questions to which everyone answered "yes". What is the sum of those counts?
     `;
 
     parseInput(raw) {
@@ -53,26 +88,41 @@ export class Solution extends BaseSolution {
     solvePart1(lines: Input): string {
         const groups = parseGroups(lines);
 
-        return sum(groups.map((g) => g.size)).toString();
+        const allUnions = groups.map((groupAnswers) => unionMany(groupAnswers).size);
+
+        return sum(allUnions).toString();
     }
 
     solvePart2(lines: Input): string {
-        return '';
+        const groups = parseGroups(lines);
+
+        const allIntersections = groups.map((groupAnswers) => intersectMany(groupAnswers).size);
+
+        return sum(allIntersections).toString();
     }
 }
 
 type Answers = Set<string>;
 
-const parseGroups = (lines: Input): Answers[] => {
+const parseGroups = (lines: Input): Answers[][] => {
     return lines
         .map((l) => (l === '' ? ',' : l))
-        .join('')
+        .join(':')
         .split(',')
-        .filter(Boolean)
-        .map((str) => {
-            return Array.from(str).reduce<Answers>((prev, cur) => {
-                prev.add(cur);
-                return prev;
-            }, new Set<string>());
+        .map((group) => {
+            return group
+                .trim()
+                .split(':')
+                .filter(Boolean);
+        })
+        .filter((e) => e.length > 0)
+        .map((group) => {
+            console.log(`group:`, group);
+            return group.map((person) => {
+                return Array.from(person).reduce<Answers>((prev, cur) => {
+                    prev.add(cur);
+                    return prev;
+                }, new Set<string>());
+            });
         });
 };
