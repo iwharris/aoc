@@ -1,4 +1,5 @@
 import { BaseSolution, Input } from '../solution';
+import { max } from '../util/fp';
 
 export class Solution extends BaseSolution {
     public description = `
@@ -52,13 +53,7 @@ export class Solution extends BaseSolution {
     `;
 
     solvePart1(lines: Input): string {
-        const highestSeatId = lines
-            .map((line) => computeSeat(line).id)
-            .reduce(
-                (currentMax, currentValue) =>
-                    currentValue > currentMax ? currentValue : currentMax,
-                0
-            );
+        const highestSeatId = max(lines.map((line) => computeSeat(line).id));
 
         return highestSeatId.toString();
     }
