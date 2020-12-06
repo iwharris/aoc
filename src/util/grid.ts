@@ -18,7 +18,7 @@ export class Grid<V = any> {
     }
 
     public isInBounds(x: number, y: number): boolean {
-        return x > 0 && x <= this.width && y > 0 && y <= this.height;
+        return x >= 0 && x < this.width && y >= 0 && y < this.height;
     }
 
     public set(x: number, y: number, value: V): void {
@@ -37,7 +37,7 @@ export class Grid<V = any> {
         return y * this.width + x;
     }
 
-    getPointFromIndex(index: number): Point {
+    public getPointFromIndex(index: number): Point {
         const x = index % this.width;
         const y = (index - x) / this.width;
         return [x, y];
@@ -69,6 +69,27 @@ export class Grid<V = any> {
     }
 
     /**
+     * Generate a series of Points starting at the origin (default 0, 0) and moving along the slope value until the current Point
+     * is out of bounds.
+     *
+     * @param slope
+     * @param origin
+     */
+    public *linePointGenerator(
+        slope: Vector2D,
+        origin: Point = [0, 0]
+    ): Generator<Point, void, void> {
+        const [slopeX, slopeY] = slope;
+        if (slopeX === 0 && slopeY === 0)
+            throw new RangeError(`Can't generate a line with no slope`);
+        let [currentX, currentY]: Point = origin;
+        while (this.isInBounds(currentX, currentY)) {
+            yield [currentX, currentY];
+            currentX += slopeX;
+            currentY += slopeY;
+        }
+    }
+
     /**
      * Map over the cell values in this Grid, returning a new Grid constructed from the map callback values.
      *
