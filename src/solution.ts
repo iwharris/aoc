@@ -12,7 +12,7 @@ export abstract class BaseSolution implements Solution {
     public abstract solvePart2(lines: Input): string;
 
     public parseInput(raw: string): Input {
-        return parseInput(raw, { preserveEmptyLines: true });
+        return parseInput(raw);
     }
 
     get name(): string {

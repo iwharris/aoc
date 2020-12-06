@@ -1,4 +1,5 @@
 import { BaseSolution, Input } from '../solution';
+import { parseInput } from '../util/parser';
 
 export class Solution extends BaseSolution {
     public description = `
@@ -114,19 +115,23 @@ export class Solution extends BaseSolution {
     `;
 
     solvePart1(lines: Input): string {
-        const passports = parseInput(lines);
+        const passports = parsePassports(lines);
 
         return passports.filter(passportContainsRequiredFields).length.toString();
     }
 
     solvePart2(lines: Input): string {
-        const passports = parseInput(lines);
+        const passports = parsePassports(lines);
 
         return passports.filter(passportIsValid).length.toString();
     }
+
+    parseInput(raw: string): Input {
+        return parseInput(raw, { preserveEmptyLines: true });
+    }
 }
 
-const parseInput = (lines: Input): Passport[] => {
+const parsePassports = (lines: Input): Passport[] => {
     return lines
         .map((l) => (l.trim() === '' ? ',' : l))
         .join(' ')
