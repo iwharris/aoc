@@ -15,7 +15,10 @@ describe(testName(solution), () => {
 
     describe('Part 2', () => {
         it('should solve part 2', () => {
-            // expect(solution.solvePart2(input)).toBe('241861950');
+            expect(solution.solvePart2(['12'])).toBe('2');
+            expect(solution.solvePart2(['14'])).toBe('2');
+            expect(solution.solvePart2(['1969'])).toBe('966');
+            expect(solution.solvePart2(['100756'])).toBe('50346');
         });
     });
 });

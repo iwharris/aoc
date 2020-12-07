@@ -32,8 +32,18 @@ export class Solution extends BaseSolution {
     }
 
     solvePart2(lines: Input): string {
-        return '';
+        const fuelReqs = lines.map((l) => computeFuelRecursive(parseInt(l)));
+
+        return sum(fuelReqs).toString();
     }
 }
 
-const computeFuelRequirement = (mass: number): number => Math.floor(mass / 3) - 2;
+const computeFuelRequirement = (mass: number): number => {
+    return mass <= 6 ? 0 : Math.floor(mass / 3) - 2;
+};
+
+const computeFuelRecursive = (mass: number): number => {
+    const thisFuel = computeFuelRequirement(mass);
+    if (thisFuel > 6) return thisFuel + computeFuelRecursive(thisFuel);
+    else return thisFuel;
+};
