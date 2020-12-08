@@ -1,20 +1,5 @@
 type NodeKey = string | number | symbol;
 
-export interface Vertex<TKey extends NodeKey, TValue = any> {
-    key: TKey;
-    value?: TValue;
-}
-
-export interface Edge<TKey extends NodeKey, TValue = any> {
-    points: [TKey, TKey];
-    value?: TValue;
-}
-
-export interface DirectedEdge<TKey = NodeKey> extends Edge {
-    from: TKey;
-    to: TKey;
-}
-
 export interface Graph<TKey extends NodeKey, TVertexValue = any, TEdgeValue = any> {
     // readonly vertices: Record<TKey, Vertex<TKey, TVertexValue>>;
     // readonly edges: Record<TKey, Edge<TKey, TEdgeValue>>;
@@ -44,42 +29,44 @@ export interface Graph<TKey extends NodeKey, TVertexValue = any, TEdgeValue = an
 
 export class DirectedGraph<TKey extends NodeKey, TVertexValue = any, TEdgeValue = any>
     implements Graph<TKey, TVertexValue, TEdgeValue> {
-    protected readonly vertices: Record<TKey, TVertexValue>;
-    protected readonly edges: Record<TKey, Record<TKey, TEdgeValue>>;
+    protected readonly vertices: Map<TKey, TVertexValue>;
+    protected readonly edges: Map<TKey, Map<TKey, TEdgeValue>>;
 
     constructor() {
-        this.vertices = {} as Record<TKey, TVertexValue>;
-        this.edges = {} as Record<TKey, Record<TKey, TEdgeValue>>;
+        this.vertices = new Map<TKey, TVertexValue>();
+        this.edges = new Map<TKey, Map<TKey, TEdgeValue>>();
     }
 
     addVertex(key: TKey, value: TVertexValue): void {
-        if (!this.vertices[key]) {
-            this.vertices[key] = value;
-        }
+        if (!this.vertices.has(key)) this.vertices.set(key, value);
     }
 
     getVertexValue(key: TKey): TVertexValue | undefined {
-        return this.vertices[key];
+        return this.vertices.get(key);
     }
 
     removeVertex(key: TKey): void {
-        delete this.vertices[key];
+        this.vertices.delete(key);
     }
 
     addEdge(from: TKey, to: TKey, value: TEdgeValue): void {
-        if (!this.edges[from]) this.edges[from] = {} as Record<TKey, TEdgeValue>;
-        if (!this.edges[from][to]) this.edges[from][to] = value;
+        if (!this.edges.has(from)) this.edges.set(from, new Map<TKey, TEdgeValue>());
+        this.edges.get(from)?.set(to, value);
     }
 
     getEdgeValue(from: TKey, to: TKey): TEdgeValue | undefined {
-        return this.edges[from]?.[to];
+        return this.edges.get(from)?.get(to);
     }
 
-    removeEdge(from: TKey, to: TKey): void {}
+    removeEdge(from: TKey, to: TKey): void {
+        this.edges.get(from)?.delete(to);
+    }
 
     isAdjacent(from: TKey, to: TKey): boolean {
-        return !!this.edges[from]?.[to];
+        return !!this.edges.get(from)?.has(to);
     }
 
-    getNeighbors(key: TKey): TKey[] {}
+    getNeighbors(key: TKey): TKey[] {
+        return Array.from(this.edges.get(key)?.keys() || []);
+    }
 }
