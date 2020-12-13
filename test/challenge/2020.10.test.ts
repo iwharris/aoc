@@ -65,7 +65,8 @@ describe(testName(solution), () => {
 
     describe('Part 2', () => {
         it('should solve part 2', () => {
-            // expect(solution.solvePart2(input)).toBe('62');
+            expect(solution.solvePart2(input1)).toBe('8');
+            expect(solution.solvePart2(input2)).toBe('19208');
         });
     });
 });
