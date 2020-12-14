@@ -1,5 +1,4 @@
 import { BaseSolution, Input } from '../solution';
-import { AssemblerEmulator } from '../util/emulator/assembler';
 import { max, min } from '../util/fp';
 
 export class Solution extends BaseSolution {
