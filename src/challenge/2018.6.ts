@@ -157,11 +157,11 @@ function computeManhattanDistance([x1, y1], [x2, y2]) {
 
 function populateCellDistancesToCoords(g: GridType, coords: Point[]): void {
     const grid = g;
-    const gridPointGenerator = grid.rectIndexGenerator(0, 0, grid.width, grid.height);
+    const gridPointGenerator = grid.rectPointGenerator(0, 0, grid.width, grid.height);
 
     let gridPoint = gridPointGenerator.next();
     while (!gridPoint.done) {
-        const point = grid.getPointFromIndex(gridPoint.value);
+        const point = gridPoint.value;
 
         const distances = coords
             .map((coord, id) => ({ id, distance: computeManhattanDistance(point, coord) }))
@@ -172,9 +172,9 @@ function populateCellDistancesToCoords(g: GridType, coords: Point[]): void {
 
         // Ties are disqualified
         if (isTied) {
-            grid.grid[gridPoint.value] = -1;
+            grid.set(gridPoint.value, -1);
         } else {
-            grid.grid[gridPoint.value] = distances[0].id;
+            grid.set(gridPoint.value, distances[0].id);
         }
         gridPoint = gridPointGenerator.next();
     }
@@ -186,18 +186,18 @@ function populateCellsWithinDistanceOfCoords(
     distanceThreshold: number
 ) {
     const grid = g;
-    const gridPointGenerator = grid.rectIndexGenerator(0, 0, grid.width, grid.height);
+    const gridPointGenerator = grid.rectPointGenerator(0, 0, grid.width, grid.height);
 
     let gridPoint = gridPointGenerator.next();
     while (!gridPoint.done) {
-        const point = grid.getPointFromIndex(gridPoint.value);
+        const point = gridPoint.value;
 
         const totalDistanceToAllCoords = coords
             .map((coord) => computeManhattanDistance(point, coord)) // get distance to each coord
             .reduce((totalDistance, currentDistance) => totalDistance + currentDistance, 0); // sum distances
 
         if (totalDistanceToAllCoords < distanceThreshold) {
-            grid.grid[gridPoint.value] = totalDistanceToAllCoords;
+            grid.set(gridPoint.value, totalDistanceToAllCoords);
         }
 
         gridPoint = gridPointGenerator.next();
@@ -207,14 +207,14 @@ function populateCellsWithinDistanceOfCoords(
 function computeDisqualifiedCoordinates(grid: GridType): number[] {
     const disqualified = {};
 
-    const gridEdgeIndexGenerator = grid.edgeIndexGenerator();
-    let edgeIndex = gridEdgeIndexGenerator.next();
-    while (!edgeIndex.done) {
-        const coordId = grid.grid[edgeIndex.value];
+    const gridEdgePointGenerator = grid.edgePointGenerator();
+    let edgePoint = gridEdgePointGenerator.next();
+    while (!edgePoint.done) {
+        const coordId = grid.getValue(edgePoint.value);
         if (coordId >= 0) {
             disqualified[coordId] = true;
         }
-        edgeIndex = gridEdgeIndexGenerator.next();
+        edgePoint = gridEdgePointGenerator.next();
     }
 
     return Object.keys(disqualified).map(Number);

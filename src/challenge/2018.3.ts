@@ -83,15 +83,15 @@ export class Solution extends BaseSolution {
             const claim = claims[i];
             const { x, y, width, height } = claim;
 
-            const gridPOintsGenerator = grid.rectIndexGenerator(x, y, width, height);
+            const gridPointGenerator = grid.rectPointGenerator(x, y, width, height);
 
             let isUncontestedClaim = true;
-            let point = gridPOintsGenerator.next();
+            let point = gridPointGenerator.next();
             while (isUncontestedClaim && !point.done) {
-                if (grid.grid[point.value] !== 1) {
+                if (grid.getValue(point.value) !== 1) {
                     isUncontestedClaim = false;
                 }
-                point = gridPOintsGenerator.next();
+                point = gridPointGenerator.next();
             }
 
             if (isUncontestedClaim) {
@@ -138,16 +138,16 @@ function computeGridSize(claims) {
     );
 }
 
-function markClaimsOnGrid(gridObject, claims) {
+function markClaimsOnGrid(gridObject: Grid, claims) {
     const grid = gridObject;
     claims.forEach((claim) => {
         const { x, y, width, height } = claim;
 
-        const gridPointsGenerator = grid.rectIndexGenerator(x, y, width, height);
+        const gridPointsGenerator = grid.rectPointGenerator(x, y, width, height);
         let point = gridPointsGenerator.next();
 
         while (!point.done) {
-            grid.grid[point.value] += 1;
+            grid.set(point.value, grid.getValue(point.value) + 1);
             point = gridPointsGenerator.next();
         }
     });

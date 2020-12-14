@@ -103,7 +103,7 @@ const parseGrid = (lines: Input): Grid<boolean> => {
         const line = lines[y];
         for (let x = 0; x < line.length; x++) {
             const char = line.charAt(x);
-            grid.set(x, y, char === '#' ? true : false);
+            grid.set([x, y], char === '#' ? true : false);
         }
     }
     return grid;
@@ -126,7 +126,7 @@ const computeTreeEncountersForSlope = (grid: Grid<boolean>, slope: Vector2D): nu
         for (const point of Array.from(generator)) {
             x += slope[0];
             y += slope[1];
-            visited.push(grid.getValue(point[0], point[1]));
+            visited.push(grid.getValue(point));
         }
     }
 

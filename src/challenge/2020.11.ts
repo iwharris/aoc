@@ -205,25 +205,25 @@ Given the new visibility method and the rule change for occupied seats becoming 
             const adjacencyGrid = grid.map<number>((seatValue, pt) => {
                 if (seatValue === Seat.EMPTY || seatValue === Seat.OCCUPIED) {
                     return Array.from(grid.adjacentPointGenerator(pt)).filter(
-                        ([ax, ay]) => grid.getValue(ax, ay) === Seat.OCCUPIED
+                        (p) => grid.getValue(p) === Seat.OCCUPIED
                     ).length;
                 }
                 return 0;
             });
 
-            for (const [px, py] of grid.pointGenerator()) {
-                const seatValue = grid.getValue(px, py);
+            for (const point of grid.pointGenerator()) {
+                const seatValue = grid.getValue(point);
                 if (seatValue === Seat.FLOOR) {
                     continue;
                 } else {
-                    const adjacentOccupiedSeats = adjacencyGrid.getValue(px, py);
+                    const adjacentOccupiedSeats = adjacencyGrid.getValue(point);
                     if (seatValue === Seat.EMPTY && adjacentOccupiedSeats === 0) {
                         changed = true;
-                        grid.set(px, py, Seat.OCCUPIED);
+                        grid.set(point, Seat.OCCUPIED);
                         // console.log(`changed [${px}, ${py}] from ${seatValue} to ${Seat.OCCUPIED}`);
                     } else if (seatValue === Seat.OCCUPIED && adjacentOccupiedSeats > 3) {
                         changed = true;
-                        grid.set(px, py, Seat.EMPTY);
+                        grid.set(point, Seat.EMPTY);
                         // console.log(`changed [${px}, ${py}] from ${seatValue} to ${Seat.EMPTY}`);
                     }
                 }
@@ -263,11 +263,11 @@ Given the new visibility method and the rule change for occupied seats becoming 
                     ];
 
                     return viewAngles.filter((angle) => {
-                        for (const [vx, vy] of grid.linePointGenerator(angle, origin, {
+                        for (const point of grid.linePointGenerator(angle, origin, {
                             excludeOrigin: true,
                         })) {
                             // if (!grid.isInBounds(vx, vy)) return false;
-                            const val = grid.getValue(vx, vy);
+                            const val = grid.getValue(point);
                             if (val === Seat.FLOOR) continue;
                             else {
                                 // console.log(
@@ -283,19 +283,19 @@ Given the new visibility method and the rule change for occupied seats becoming 
                 return 0;
             });
 
-            for (const [px, py] of grid.pointGenerator()) {
-                const seatValue = grid.getValue(px, py);
+            for (const point of grid.pointGenerator()) {
+                const seatValue = grid.getValue(point);
                 if (seatValue === Seat.FLOOR) {
                     continue;
                 } else {
-                    const visibleOccupiedSeats = visibilityGrid.getValue(px, py);
+                    const visibleOccupiedSeats = visibilityGrid.getValue(point);
                     if (seatValue === Seat.EMPTY && visibleOccupiedSeats === 0) {
                         changed = true;
-                        grid.set(px, py, Seat.OCCUPIED);
+                        grid.set(point, Seat.OCCUPIED);
                         // console.log(`changed [${px}, ${py}] from ${seatValue} to ${Seat.OCCUPIED}`);
                     } else if (seatValue === Seat.OCCUPIED && visibleOccupiedSeats > 4) {
                         changed = true;
-                        grid.set(px, py, Seat.EMPTY);
+                        grid.set(point, Seat.EMPTY);
                         // console.log(`changed [${px}, ${py}] from ${seatValue} to ${Seat.EMPTY}`);
                     }
                 }

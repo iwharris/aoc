@@ -17,23 +17,25 @@ export class Grid<V = any> {
         this.grid = Array(this.width * this.height).fill(initialCellValue);
     }
 
-    public isInBounds(x: number, y: number): boolean {
+    public isInBounds([x, y]: Point): boolean {
         return x >= 0 && x < this.width && y >= 0 && y < this.height;
     }
 
-    public set(x: number, y: number, value: V): void {
-        if (!this.isInBounds(x, y))
-            throw new RangeError(`Tried to set value for out-of-bounds point [${x},${y}]`);
-        this.grid[this.getIndex(x, y)] = value;
+    public set(point: Point, value: V): void {
+        if (!this.isInBounds(point))
+            throw new RangeError(`Tried to set value for out-of-bounds point [${point}]`);
+        this.grid[this.getIndex(point)] = value;
     }
 
-    public getValue(x: number, y: number): V {
-        if (!this.isInBounds(x, y))
-            throw new RangeError(`Tried to get value for out-of-bounds point [${x},${y}]`);
-        return this.grid[this.getIndex(x, y)];
+    public getValue(point: Point): V {
+        if (!this.isInBounds(point))
+            throw new RangeError(
+                `Tried to get value for out-of-bounds point [${point}]. Grid size is ${this.width}x${this.height}`
+            );
+        return this.grid[this.getIndex(point)];
     }
 
-    public getIndex(x: number, y: number): number {
+    public getIndex([x, y]: Point): number {
         return y * this.width + x;
     }
 
@@ -43,28 +45,31 @@ export class Grid<V = any> {
         return [x, y];
     }
 
-    public *rectIndexGenerator(
+    public *rectPointGenerator(
         x: number,
         y: number,
         width: number,
         height: number
-    ): Generator<number> {
+    ): Generator<Point> {
         for (let gridY = y; gridY < y + height; gridY += 1) {
             for (let gridX = x; gridX < x + width; gridX += 1) {
-                yield this.getIndex(gridX, gridY);
+                yield [gridX, gridY];
             }
         }
     }
 
-    public *edgeIndexGenerator(): Generator<number> {
+    /**
+     * Iterare over all points on the grid boundary
+     */
+    public *edgePointGenerator(): Generator<Point> {
         for (let x = 0; x < this.width; x += 1) {
-            yield this.getIndex(x, 0);
-            yield this.getIndex(x, this.height - 1);
+            yield [x, 0];
+            yield [x, this.height - 1];
         }
 
         for (let y = 1; y < this.height - 1; y += 1) {
-            yield this.getIndex(0, y);
-            yield this.getIndex(this.height - 1, y);
+            yield [0, y];
+            yield [this.width - 1, y];
         }
     }
 
@@ -92,7 +97,7 @@ export class Grid<V = any> {
             currentY += slopeY;
         }
 
-        while (this.isInBounds(currentX, currentY)) {
+        while (this.isInBounds([currentX, currentY])) {
             yield [currentX, currentY];
             currentX += slopeX;
             currentY += slopeY;
@@ -123,8 +128,7 @@ export class Grid<V = any> {
         ];
 
         for (const point of allPoints) {
-            const [px, py] = point;
-            if (options.includeOutOfBoundsPoints || this.isInBounds(px, py)) {
+            if (options.includeOutOfBoundsPoints || this.isInBounds(point)) {
                 yield point;
             }
         }
@@ -222,7 +226,7 @@ export class Grid<V = any> {
                 );
             for (let x = 0; x < row.length; x++) {
                 const char = row.charAt(x);
-                grid.set(x, y, transformer(char, [x, y]));
+                grid.set([x, y], transformer(char, [x, y]));
             }
         }
 
