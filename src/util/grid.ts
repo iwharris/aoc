@@ -74,15 +74,24 @@ export class Grid<V = any> {
      *
      * @param slope
      * @param origin
+     * @param options.excludeOrigin don't include the origin in the iterated points
      */
     public *linePointGenerator(
         slope: Vector2D,
-        origin: Point = [0, 0]
+        origin: Point = [0, 0],
+        options: { excludeOrigin: boolean } = { excludeOrigin: false }
     ): Generator<Point, void, void> {
         const [slopeX, slopeY] = slope;
+
         if (slopeX === 0 && slopeY === 0)
             throw new RangeError(`Can't generate a line with no slope`);
         let [currentX, currentY]: Point = origin;
+
+        if (options.excludeOrigin) {
+            currentX += slopeX;
+            currentY += slopeY;
+        }
+
         while (this.isInBounds(currentX, currentY)) {
             yield [currentX, currentY];
             currentX += slopeX;
