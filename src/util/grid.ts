@@ -91,6 +91,45 @@ export class Grid<V = any> {
     }
 
     /**
+     * Generates up to eight Points adjacent to an origin.
+     *
+     * Out-of-bounds are not iterated over by default; use the includeOutOfBoundsPoints option
+     * to change this.
+     */
+    public *adjacentPointGenerator(
+        origin: Point,
+        options: { includeOutOfBoundsPoints: boolean } = { includeOutOfBoundsPoints: false }
+    ): Generator<Point, void, void> {
+        const [x, y] = origin;
+
+        const allPoints: Point[] = [
+            [x - 1, y - 1],
+            [x, y - 1],
+            [x + 1, y - 1],
+            [x - 1, y],
+            [x + 1, y],
+            [x - 1, y + 1],
+            [x, y + 1],
+            [x + 1, y + 1],
+        ];
+
+        for (const point of allPoints) {
+            const [px, py] = point;
+            if (options.includeOutOfBoundsPoints || this.isInBounds(px, py)) {
+                yield point;
+            }
+        }
+    }
+
+    public *pointGenerator(): Generator<Point, void, void> {
+        for (let y = 0; y < this.height; y++) {
+            for (let x = 0; x < this.width; x++) {
+                yield [x, y] as Point;
+            }
+        }
+    }
+
+    /**
      * Map over the cell values in this Grid, returning a new Grid constructed from the map callback values.
      *
      * Cells are "visited" in order from left to right and top to bottom.
@@ -98,12 +137,15 @@ export class Grid<V = any> {
      * @param callbackFn
      * @param thisArg
      */
-    public map<T = any>(
-        callbackFn: (value: V, index: number, array: any[]) => T,
+    public map<T = V>(
+        callbackFn: (value: V, point: Point, array: V[]) => T,
         thisArg?: any
     ): Grid<T> {
         const newGrid = new Grid<T>(this.width, this.height);
-        newGrid.grid = this.grid.map<T>(callbackFn, thisArg);
+        newGrid.grid = this.grid.map<T>(
+            (v, idx, arr) => callbackFn(v, this.getPointFromIndex(idx), arr),
+            thisArg
+        );
         return newGrid;
     }
 
@@ -151,4 +193,32 @@ export class Grid<V = any> {
 
         return str;
     }
+
+    public static loadFromStrings = <V = any>(
+        rows: string[],
+        transformer: LoaderCallback<V> = (char) => (char as unknown) as V
+    ): Grid<V> => {
+        const height = rows.length;
+        if (!height) throw new Error(`Cannot create Grid from empty string array`);
+        const width = rows[0].length;
+        if (!width) throw new Error(`Cannot create Grid with empty rows`);
+
+        const grid = new Grid(width, height);
+
+        for (let y = 0; y < rows.length; y++) {
+            const row = rows[y];
+            if (row.length !== grid.width)
+                throw new Error(
+                    `Row "${row}" at index ${y} does not match grid width of ${grid.width}`
+                );
+            for (let x = 0; x < row.length; x++) {
+                const char = row.charAt(x);
+                grid.set(x, y, transformer(char, [x, y]));
+            }
+        }
+
+        return grid;
+    };
 }
+
+type LoaderCallback<V> = (char: string, point: Point) => V;
