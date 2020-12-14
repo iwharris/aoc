@@ -1,5 +1,5 @@
 import { BaseSolution, Input } from '../solution';
-import { Grid } from '../util/grid';
+import { Grid, Vector2D } from '../util/grid';
 
 export class Solution extends BaseSolution {
     public description = `
@@ -87,6 +87,113 @@ export class Solution extends BaseSolution {
     At this point, something interesting happens: the chaos stabilizes and further applications of these rules cause no seats to change state! Once people stop moving around, you count 37 occupied seats.
     
     Simulate your seating area by applying the seating rules repeatedly until no seats change state. How many seats end up occupied?    
+
+    --- Part Two ---
+As soon as people start to arrive, you realize your mistake. People don't just care about adjacent seats - they care about the first seat they can see in each of those eight directions!
+
+Now, instead of considering just the eight immediately adjacent seats, consider the first seat in each of those eight directions. For example, the empty seat below would see eight occupied seats:
+
+.......#.
+...#.....
+.#.......
+.........
+..#L....#
+....#....
+.........
+#........
+...#.....
+The leftmost empty seat below would only see one empty seat, but cannot see any of the occupied ones:
+
+.............
+.L.L.#.#.#.#.
+.............
+The empty seat below would see no occupied seats:
+
+.##.##.
+#.#.#.#
+##...##
+...L...
+##...##
+#.#.#.#
+.##.##.
+Also, people seem to be more tolerant than you expected: it now takes five or more visible occupied seats for an occupied seat to become empty (rather than four or more from the previous rules). The other rules still apply: empty seats that see no occupied seats become occupied, seats matching no rule don't change, and floor never changes.
+
+Given the same starting layout as above, these new rules cause the seating area to shift around as follows:
+
+L.LL.LL.LL
+LLLLLLL.LL
+L.L.L..L..
+LLLL.LL.LL
+L.LL.LL.LL
+L.LLLLL.LL
+..L.L.....
+LLLLLLLLLL
+L.LLLLLL.L
+L.LLLLL.LL
+#.##.##.##
+#######.##
+#.#.#..#..
+####.##.##
+#.##.##.##
+#.#####.##
+..#.#.....
+##########
+#.######.#
+#.#####.##
+#.LL.LL.L#
+#LLLLLL.LL
+L.L.L..L..
+LLLL.LL.LL
+L.LL.LL.LL
+L.LLLLL.LL
+..L.L.....
+LLLLLLLLL#
+#.LLLLLL.L
+#.LLLLL.L#
+#.L#.##.L#
+#L#####.LL
+L.#.#..#..
+##L#.##.##
+#.##.#L.##
+#.#####.#L
+..#.#.....
+LLL####LL#
+#.L#####.L
+#.L####.L#
+#.L#.L#.L#
+#LLLLLL.LL
+L.L.L..#..
+##LL.LL.L#
+L.LL.LL.L#
+#.LLLLL.LL
+..L.L.....
+LLLLLLLLL#
+#.LLLLL#.L
+#.L#LL#.L#
+#.L#.L#.L#
+#LLLLLL.LL
+L.L.L..#..
+##L#.#L.L#
+L.L#.#L.L#
+#.L####.LL
+..#.#.....
+LLL###LLL#
+#.LLLLL#.L
+#.L#LL#.L#
+#.L#.L#.L#
+#LLLLLL.LL
+L.L.L..#..
+##L#.#L.L#
+L.L#.LL.L#
+#.LLLL#.LL
+..#.L.....
+LLL###LLL#
+#.LLLLL#.L
+#.L#LL#.L#
+
+Again, at this point, people stop shifting around and the seating area reaches equilibrium. Once this occurs, you count 26 occupied seats.
+
+Given the new visibility method and the rule change for occupied seats becoming empty, once equilibrium is reached, how many seats end up occupied?
     `;
 
     solvePart1(lines: Input): string {
@@ -136,7 +243,71 @@ export class Solution extends BaseSolution {
     }
 
     solvePart2(lines: Input): string {
-        return '';
+        const grid = Grid.loadFromStrings<Seat>(lines, (char) => stringToSeatValue[char]);
+
+        const step = (): boolean => {
+            let changed = false;
+            // compute adjacency grid
+            const visibilityGrid = grid.map<number>((seatValue, origin) => {
+                if (seatValue === Seat.EMPTY || seatValue === Seat.OCCUPIED) {
+                    // compute visibility to occupied seats by looking in the eight cardinal directions
+                    const viewAngles: Vector2D[] = [
+                        [-1, -1], // northwest
+                        [0, -1], // north
+                        [1, -1], // northeast
+                        [-1, 0], // west
+                        [1, 0], // east
+                        [-1, 1], // southwest
+                        [0, 1], // south
+                        [1, 1], // southeast
+                    ];
+
+                    return viewAngles.filter((angle) => {
+                        for (const [vx, vy] of grid.linePointGenerator(angle, origin, {
+                            excludeOrigin: true,
+                        })) {
+                            // if (!grid.isInBounds(vx, vy)) return false;
+                            const val = grid.getValue(vx, vy);
+                            if (val === Seat.FLOOR) continue;
+                            else {
+                                // console.log(
+                                //     `checking visibility at point ${vx}, ${vy} from ${origin}`
+                                // );
+                                if (val === Seat.EMPTY) return false;
+                                else if (val === Seat.OCCUPIED) return true;
+                            }
+                        }
+                        return false;
+                    }).length;
+                }
+                return 0;
+            });
+
+            for (const [px, py] of grid.pointGenerator()) {
+                const seatValue = grid.getValue(px, py);
+                if (seatValue === Seat.FLOOR) {
+                    continue;
+                } else {
+                    const visibleOccupiedSeats = visibilityGrid.getValue(px, py);
+                    if (seatValue === Seat.EMPTY && visibleOccupiedSeats === 0) {
+                        changed = true;
+                        grid.set(px, py, Seat.OCCUPIED);
+                        // console.log(`changed [${px}, ${py}] from ${seatValue} to ${Seat.OCCUPIED}`);
+                    } else if (seatValue === Seat.OCCUPIED && visibleOccupiedSeats > 4) {
+                        changed = true;
+                        grid.set(px, py, Seat.EMPTY);
+                        // console.log(`changed [${px}, ${py}] from ${seatValue} to ${Seat.EMPTY}`);
+                    }
+                }
+            }
+            // console.log(`changed: ${changed}`);
+            return changed;
+        };
+
+        while (step()) {}
+
+        const occupied = grid.grid.filter((v) => v === Seat.OCCUPIED).length;
+        return occupied.toString();
     }
 }
 
