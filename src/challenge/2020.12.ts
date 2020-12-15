@@ -84,10 +84,10 @@ interface Move {
 }
 
 const positionTransforms: Record<Compass, (origin: Point, distance: number) => unknown> = {
-    [Compass.NORTH]: (o, d) => transformPoint(o, [0, -d]),
-    [Compass.SOUTH]: (o, d) => transformPoint(o, [0, d]),
-    [Compass.WEST]: (o, d) => transformPoint(o, [-d, 0]),
-    [Compass.EAST]: (o, d) => transformPoint(o, [d, 0]),
+    [Compass.NORTH]: (o, d) => translatePoint(o, [0, d]),
+    [Compass.SOUTH]: (o, d) => translatePoint(o, [0, -d]),
+    [Compass.WEST]: (o, d) => translatePoint(o, [-d, 0]),
+    [Compass.EAST]: (o, d) => translatePoint(o, [d, 0]),
 };
 
 const directionIndexDelta: Record<Direction, number> = {
