@@ -246,3 +246,19 @@ export const translatePoint = (p: Point, distance: Vector2D): Point => {
     p[1] += distance[1];
     return p;
 };
+
+/** Mutates a Point, rotating it clockwise 90 degrees around an optional origin. Returns the same Point. */
+export const rotatePointClockwise = (p: Point): Point => {
+    const [x, y] = p;
+    p[0] = y;
+    p[1] = -x;
+    return p;
+};
+
+/** Mutates a Point, rotating it counterclockwise 90 degrees around an optional origin. Returns the same Point. */
+export const rotatePointCounterclockwise = (p: Point): Point => {
+    const [x, y] = p;
+    p[0] = -y;
+    p[1] = x;
+    return p;
+};
