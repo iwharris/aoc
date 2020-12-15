@@ -240,8 +240,8 @@ export const manhattanDistance = ([x1, y1]: Point, [x2, y2]: Point): number => {
     return Math.abs(x1 - x2) + Math.abs(y1 - y2);
 };
 
-/** Mutates a Point by moving it. Returns the same Point */
-export const transformPoint = (p: Point, distance: Vector2D): Point => {
+/** Mutates a Point, moving it by some x,y offset. Returns the same Point. */
+export const translatePoint = (p: Point, distance: Vector2D): Point => {
     p[0] += distance[0];
     p[1] += distance[1];
     return p;

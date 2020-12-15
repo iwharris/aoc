@@ -1,5 +1,5 @@
 import { BaseSolution, Input } from '../solution';
-import { manhattanDistance, Point, transformPoint } from '../util/grid';
+import { manhattanDistance, Point, translatePoint } from '../util/grid';
 
 export class Solution extends BaseSolution {
     public description = `
