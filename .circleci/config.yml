@@ -33,7 +33,7 @@ jobs:
 
             - run:
                   name: Run tests
-                  command: npm run test:coverage
+                  command: npm run test:coverage -- --runInBand
 
             - store_artifacts:
                   path: coverage/lcov-report
@@ -49,7 +49,7 @@ jobs:
 
             - persist_to_workspace:
                   root: ~/repo
-                  paths: ["."]
+                  paths: ['.']
     deploy:
         <<: *defaults
         steps:
