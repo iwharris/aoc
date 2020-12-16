@@ -174,20 +174,56 @@ class BitmaskEmulator2 {
     }
 
     applyMask(addr: number): number[] {
+        // console.log(`want to write to address ${addr}`);
         const addrMask = addr.toString(2).padStart(36, '0');
 
-        const newaddrMask = Array.from(addrMask)
-            .reduce<string[]>((acc, char, i) => {
-                const maskValue = this.mask.charAt(i);
-                if (maskValue === 'X') acc.push(char);
-                else acc.push(maskValue);
+        const address: number[] = Array.from(addrMask).map((digit) => parseInt(digit));
 
-                return acc;
-            }, [])
-            .join('');
+        const computePortion = (addr: number[]): number[][] => {
+            // console.log(`computePortion ${addr.join('')} mask=${this.mask.slice(-addr.length)}`);
+            for (let i = 0; i < addr.length; i++) {
+                const maskChar = this.mask.slice(-addr.length).charAt(i);
+                if (maskChar === '0') {
+                    // do nothing
+                } else if (maskChar === '1') {
+                    addr[i] = 1; // overwrite with 1
+                } else if (maskChar === 'X') {
+                    // floating
+                    // recursively compute portions starting at i+1 and prepend 0 and 1 to each
+                    const portions: number[][][] = computePortion(addr.slice(i + 1)).map(
+                        (addrPortion) => {
+                            return [
+                                [...addr.slice(0, i), 0, ...addrPortion],
+                                [...addr.slice(0, i), 1, ...addrPortion],
+                            ];
+                        }
+                    );
+
+                    return portions.flat(1);
+                }
+            }
+
+            return [addr];
+        };
+
+        const addrs = computePortion(address);
+
+        // const newaddrMask = Array.from(addrMask)
+        //     .reduce<string[]>((acc, char, i) => {
+        //         const maskValue = this.mask.charAt(i);
+        //         if (maskValue === 'X') acc.push(char);
+        //         else acc.push(maskValue);
+
+        //         return acc;
+        //     }, [])
+        //     .join('');
 
         // console.log(`after mask is ${newaddrMask}`)
 
-        return parseInt(newaddrMask, 2);
+        return addrs.map((addr) => {
+            const result = parseInt(addr.join(''), 2);
+            // console.log(`Addr is ${result} (${addr.join('')})`);
+            return result;
+        });
     }
 }
