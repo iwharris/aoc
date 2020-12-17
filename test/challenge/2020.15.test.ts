@@ -11,10 +11,4 @@ describe(testName(solution), () => {
             expect(solution.solvePart1(input)).toBe('436');
         });
     });
-
-    describe('Part 2', () => {
-        it('should solve part 2', () => {
-            //
-        });
-    });
 });

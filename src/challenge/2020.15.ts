@@ -73,22 +73,6 @@ const solve = (input: number[], targetIteration: number): string => {
     const memory: Record<number, number> = {}; // mapping of number to an array of turn numbers (most recent last)
     let lastValue: number = -1;
 
-    // const speak = (prev: number, turn: number): void => {
-    //     let spoken: number;
-    //     if (memory[prev] === undefined) {
-    //         // first time spoken
-    //         memory[prev] = turn;
-    //         spoken = 0;
-    //     } else {
-    //         spoken = turn - memory[prev];
-    //         memory[prev] = turn;
-    //     }
-
-    //     console.log(`t=${turn}, last=${prev}, speak: ${spoken}`);
-
-    //     lastValue = spoken;
-    // };
-
     for (let turn = 0; turn < input.length; turn++) {
         // speak the starting value
         memory[input[turn]] = turn;
@@ -96,7 +80,7 @@ const solve = (input: number[], targetIteration: number): string => {
     }
 
     for (let turn = input.length; turn < targetIteration - 1; turn++) {
-        if (turn % 1000000 === 0) console.log(turn);
+        // if (turn % 1000000 === 0) console.log(turn);
         if (memory[lastValue] === undefined) {
             // first time spoken
             memory[lastValue] = turn;
