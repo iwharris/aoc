@@ -1,6 +1,6 @@
 import { isObject } from 'util';
 import { BaseSolution, Input } from '../solution';
-import { sum } from '../util/fp';
+import { product, sum } from '../util/fp';
 import { parseInput } from '../util/parser';
 
 export class Solution extends BaseSolution {
@@ -44,9 +44,32 @@ export class Solution extends BaseSolution {
     It doesn't matter which position corresponds to which field; you can identify invalid nearby tickets by considering only whether tickets contain values that are not valid for any field. In this example, the values on the first nearby ticket are all valid for at least one field. This is not true of the other three nearby tickets: the values 4, 55, and 12 are are not valid for any field. Adding together all of the invalid values produces your ticket scanning error rate: 4 + 55 + 12 = 71.
 
     Consider the validity of the nearby tickets you scanned. What is your ticket scanning error rate?
+
+    --- Part Two ---
+
+    Now that you've identified which tickets contain invalid values, discard those tickets entirely. Use the remaining valid tickets to determine which field is which.
+    
+    Using the valid ranges for each field, determine what order the fields appear on the tickets. The order is consistent between all tickets: if seat is the third field, it is the third field on every ticket, including your ticket.
+    
+    For example, suppose you have the following notes:
+    
+    class: 0-1 or 4-19
+    row: 0-5 or 8-19
+    seat: 0-13 or 16-19
+    
+    your ticket:
+    11,12,13
+    
+    nearby tickets:
+    3,9,18
+    15,1,5
+    5,14,9
+    Based on the nearby tickets in the above example, the first position must be row, the second position must be class, and the third position must be seat; you can conclude that in your ticket, class is 12, row is 11, and seat is 13.
+    
+    Once you work out which field is which, look for the six fields on your ticket that start with the word departure. What do you get if you multiply those six values together?
     `;
 
-    parseInput(raw) {
+    parseInput(raw: string) {
         return parseInput(raw, { preserveEmptyLines: true });
     }
 
@@ -57,7 +80,7 @@ export class Solution extends BaseSolution {
             .map((ticket) => {
                 return ticket.filter((num) => {
                     return Object.values(notes.fields).every((ranges) =>
-                        ranges.every(([min, max]) => num < min || num > max)
+                        ranges.every((range) => !numberIsInRange(num, range))
                     );
                 });
             })
@@ -69,9 +92,82 @@ export class Solution extends BaseSolution {
     }
 
     solvePart2(lines: Input): string {
-        return '';
+        const notes = parseNotes(lines);
+
+        // Filter out invalid tickets
+        notes.otherTickets = notes.otherTickets.filter((ticket) =>
+            isTicketValid(ticket, notes.fields)
+        );
+
+        const allTickets = [notes.myTicket, ...notes.otherTickets];
+
+        // Mapping of field index to field name
+        const matches: Map<number, string> = new Map();
+
+        // Mapping of field index to a set of possible Fields
+        const possible: Map<number, Set<string>> = new Map();
+
+        // For each field:
+        for (let fieldIndex = 0; fieldIndex < notes.myTicket.length; fieldIndex++) {
+            // Create a mapping of field index to a Set of possible Field matches and pre-populate with all fields
+            const possibleForThisField: Set<string> = new Set(Object.keys(notes.fields));
+            // Populate the Set by iterating through the same field in every ticket
+            for (const ticket of allTickets) {
+                const ticketFieldValue = ticket[fieldIndex];
+                const eliminatedFields = Object.keys(notes.fields).filter((name) => {
+                    const ranges = notes.fields[name];
+                    return ranges.every((range) => !numberIsInRange(ticketFieldValue, range)); // fieldValue falls within one range
+                });
+
+                eliminatedFields.forEach((fieldName) => possibleForThisField.delete(fieldName));
+            }
+            possible.set(fieldIndex, possibleForThisField);
+        }
+
+        // console.log(possible);
+
+        // while not solved:
+        while (matches.size !== Object.keys(notes.fields).length) {
+            // check if a field index has only one possible field match
+            const nextMatch = Array.from(possible.entries()).find((entry) => entry[1].size === 1);
+
+            if (!nextMatch) throw new Error(`couldn't find any field with 1 possibility`);
+
+            const [fieldIndex, set] = nextMatch;
+            const [fieldName] = Array.from(set.values());
+
+            // If so, remove that field name from every Set and add it to the solution mapping
+            matches.set(fieldIndex, fieldName);
+
+            possible.forEach((set) => set.delete(fieldName));
+        }
+        // continue until all fields are in the solution mapping
+
+        const departureValues = Array.from(matches.entries())
+            .filter(([fieldIndex, fieldName]) => fieldName.startsWith('departure'))
+            .map(([fieldIndex]) => notes.myTicket[fieldIndex]);
+
+        // console.log(`got ${departureValues.length} vals`);
+
+        return (product(departureValues) as number).toString();
     }
 }
+
+const numberIsInRange = (num: number, [min, max]: Range): boolean => {
+    const result = num >= min && num <= max;
+    // console.log(`${num} is within ${min}-${max}: ${result}`);
+    return result;
+};
+
+const isTicketValid = (ticket: Ticket, fields: Record<string, Range[]>): boolean => {
+    return (
+        ticket.filter((num) => {
+            return Object.values(fields).every((ranges) =>
+                ranges.every((range) => !numberIsInRange(num, range))
+            );
+        }).length === 0
+    );
+};
 
 const parseNotes = (input: Input): Notes => {
     const otherTickets: Ticket[] = [];

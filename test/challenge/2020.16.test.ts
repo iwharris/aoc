@@ -1,5 +1,4 @@
 import { Solution } from '../../src/challenge/2020.16';
-import { parseInput } from '../../src/util/parser';
 import { testName } from '../test-helper';
 
 const solution = new Solution();
