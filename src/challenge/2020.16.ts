@@ -1,4 +1,3 @@
-import { isObject } from 'util';
 import { BaseSolution, Input } from '../solution';
 import { product, sum } from '../util/fp';
 import { parseInput } from '../util/parser';
