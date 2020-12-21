@@ -1,8 +1,10 @@
 export type Point = [number, number];
 export type Point3D = [number, number, number];
+export type PointN = number[];
 
 export type Vector2D = Point;
 export type Vector3D = Point3D;
+export type VectorN = PointN;
 
 /**
  * A basic data structure that represents a 2-dimensional grid of "cells". The grid offers some common FP methods
@@ -273,6 +275,36 @@ export function* adjacencyGenerator3D(point: Point3D): Generator<Point3D> {
                 const [nx, ny, nz] = [x, y, z].map((offset, i) => point[i] + offset);
                 yield [nx, ny, nz];
             }
+        }
+    }
+}
+
+export function* adjacencyGeneratorNDimension(
+    point: PointN,
+    isRecursiveCall: boolean = false
+): Generator<PointN> {
+    const smallerDimensions = point.slice(0, -1);
+    const [dimension] = point.slice(-1);
+
+    // console.log(`split into "${smallerDimensions}", "${dimension}"`)
+
+    const internalGeneratorIterable =
+        smallerDimensions.length === 0
+            ? [[]]
+            : adjacencyGeneratorNDimension(smallerDimensions, true);
+
+    for (const iteratorValue of internalGeneratorIterable) {
+        for (let i = -1; i <= 1; i++) {
+            // console.log(`yielding ${[...iteratorValue, dimension + i]}`)
+            const result = [...iteratorValue, dimension + i];
+            // console.log(`result is ${result}`);
+            if (!isRecursiveCall && result.every((val, idx) => val === point[idx])) {
+                // console.log(
+                //     `skipping ${result} because it is identical to the origin point: ${point}`
+                // );
+                continue; // skip this yield because it's identical to the origin point
+            }
+            yield result;
         }
     }
 }
