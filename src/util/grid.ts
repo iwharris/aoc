@@ -1,6 +1,8 @@
 export type Point = [number, number];
+export type Point3D = [number, number, number];
 
 export type Vector2D = Point;
+export type Vector3D = Point3D;
 
 /**
  * A basic data structure that represents a 2-dimensional grid of "cells". The grid offers some common FP methods
@@ -262,3 +264,15 @@ export const rotatePointCounterclockwise = (p: Point): Point => {
     p[1] = x;
     return p;
 };
+
+export function* adjacencyGenerator3D(point: Point3D): Generator<Point3D> {
+    for (let z = -1; z <= 1; z++) {
+        for (let y = -1; y <= 1; y++) {
+            for (let x = -1; x <= 1; x++) {
+                if ([x, y, z].every((v) => v === 0)) continue;
+                const [nx, ny, nz] = [x, y, z].map((offset, i) => point[i] + offset);
+                yield [nx, ny, nz];
+            }
+        }
+    }
+}
