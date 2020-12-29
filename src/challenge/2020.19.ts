@@ -55,6 +55,85 @@ export class Solution extends BaseSolution {
     Your goal is to determine the number of messages that completely match rule 0. In the above example, ababbb and abbbab match, but bababa, aaabbb, and aaaabbb do not, producing the answer 2. The whole message must match all of rule 0; there can't be extra unmatched characters in the message. (For example, aaaabbb might appear to match rule 0 above, but it has an extra unmatched b on the end.)
     
     How many messages completely match rule 0?
+
+    --- Part Two ---
+    As you look over the list of messages, you realize your matching rules aren't quite right. To fix them, completely replace rules 8: 42 and 11: 42 31 with the following:
+    
+    8: 42 | 42 8
+    11: 42 31 | 42 11 31
+    This small change has a big impact: now, the rules do contain loops, and the list of messages they could hypothetically match is infinite. You'll need to determine how these changes affect which messages are valid.
+    
+    Fortunately, many of the rules are unaffected by this change; it might help to start by looking at which rules always match the same set of values and how those rules (especially rules 42 and 31) are used by the new versions of rules 8 and 11.
+    
+    (Remember, you only need to handle the rules you have; building a solution that could handle any hypothetical combination of rules would be significantly more difficult.)
+    
+    For example:
+    
+    42: 9 14 | 10 1
+    9: 14 27 | 1 26
+    10: 23 14 | 28 1
+    1: "a"
+    11: 42 31
+    5: 1 14 | 15 1
+    19: 14 1 | 14 14
+    12: 24 14 | 19 1
+    16: 15 1 | 14 14
+    31: 14 17 | 1 13
+    6: 14 14 | 1 14
+    2: 1 24 | 14 4
+    0: 8 11
+    13: 14 3 | 1 12
+    15: 1 | 14
+    17: 14 2 | 1 7
+    23: 25 1 | 22 14
+    28: 16 1
+    4: 1 1
+    20: 14 14 | 1 15
+    3: 5 14 | 16 1
+    27: 1 6 | 14 18
+    14: "b"
+    21: 14 1 | 1 14
+    25: 1 1 | 1 14
+    22: 14 14
+    8: 42
+    26: 14 22 | 1 20
+    18: 15 15
+    7: 14 5 | 1 21
+    24: 14 1
+    
+    abbbbbabbbaaaababbaabbbbabababbbabbbbbbabaaaa
+    bbabbbbaabaabba
+    babbbbaabbbbbabbbbbbaabaaabaaa
+    aaabbbbbbaaaabaababaabababbabaaabbababababaaa
+    bbbbbbbaaaabbbbaaabbabaaa
+    bbbababbbbaaaaaaaabbababaaababaabab
+    ababaaaaaabaaab
+    ababaaaaabbbaba
+    baabbaaaabbaaaababbaababb
+    abbbbabbbbaaaababbbbbbaaaababb
+    aaaaabbaabaaaaababaa
+    aaaabbaaaabbaaa
+    aaaabbaabbaaaaaaabbbabbbaaabbaabaaa
+    babaaabbbaaabaababbaabababaaab
+    aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba
+    Without updating rules 8 and 11, these rules only match three messages: bbabbbbaabaabba, ababaaaaaabaaab, and ababaaaaabbbaba.
+    
+    However, after updating rules 8 and 11, a total of 12 messages match:
+    
+    bbabbbbaabaabba
+    babbbbaabbbbbabbbbbbaabaaabaaa
+    aaabbbbbbaaaabaababaabababbabaaabbababababaaa
+    bbbbbbbaaaabbbbaaabbabaaa
+    bbbababbbbaaaaaaaabbababaaababaabab
+    ababaaaaaabaaab
+    ababaaaaabbbaba
+    baabbaaaabbaaaababbaababb
+    abbbbabbbbaaaababbbbbbaaaababb
+    aaaaabbaabaaaaababaa
+    aaaabbaabbaaaaaaabbbabbbaaabbaabaaa
+    aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba
+    
+    After updating rules 8 and 11, how many messages completely match rule 0?
     `;
 
     parseInput(raw) {
@@ -63,21 +142,20 @@ export class Solution extends BaseSolution {
 
     solvePart1(lines: Input): string {
         const [ruleMap, strings] = parseAll(lines);
-        const tree = createRuleTree(ruleMap, 0); // create rule tree with idx 0 at root
-        const raw = tree.compile();
-        const regex = new RegExp(`^${raw}$`);
-
-        // console.log(`built regex: ${raw}`);
-
+        const regex = compileToRegex(ruleMap);
         const validStrings = strings.filter((s) => regex.test(s));
-
-        // console.log(`valid strings are ${validStrings}`);
-
         return validStrings.length.toString();
     }
 
     solvePart2(lines: Input): string {
-        return '';
+        const [ruleMap, strings] = parseAll(lines);
+
+        ruleMap[8] = ['42', '|', '42', '8'];
+        ruleMap[11] = ['42', '31', '|', '42', '11', '31'];
+
+        const regex = compileToRegex(ruleMap);
+        const validStrings = strings.filter((s) => regex.test(s));
+        return validStrings.length.toString();
     }
 }
 
@@ -109,104 +187,33 @@ type RawExpressionComponent = string;
 type RawExpression = RawExpressionComponent[];
 type RuleMap = Record<number, RawExpression>;
 
-interface Expression {
-    // readonly raw: RawExpressionComponent;
-    // readonly isLeaf: boolean;
-    compile: () => string; // compile this expression to a regex
-}
-
-interface InnerExpression extends Expression {
-    push: (expr: Expression) => void;
-}
-
-class OrExpression implements InnerExpression {
-    // public readonly raw = '|';
-    private components: Expression[] = [];
-
-    public push(expr: Expression) {
-        this.components.push(expr);
-    }
-
-    compile() {
-        // console.log(
-        //     `OR expression contains components: ${JSON.stringify(this.components, null, 2)}`
-        // );
-        return `(${this.components.map((c) => c.compile()).join('|')})`;
-    }
-}
-
-class SequenceExpression implements InnerExpression {
-    private components: Expression[] = [];
-
-    public push(expr: Expression) {
-        this.components.push(expr);
-    }
-
-    compile() {
-        return `(${this.components.map((c) => c.compile()).join('')})`;
-    }
-}
-
-class ValueExpression implements Expression {
-    private value: string;
-
-    constructor(val: string) {
-        this.value = val;
-    }
-
-    compile() {
-        return this.value;
-    }
-}
-
-const createRuleTree = (ruleMap: RuleMap, idx: number): Expression => {
-    const rule = ruleMap[idx];
-    if (!rule) throw new Error(`cant find rule for idx ${idx}`);
-
-    // console.log(`rule is ${rule}`);
-    const exprStack: Expression[] = [];
-    for (const elem of rule) {
-        // console.log(`elem is ${elem}`);
-        if (/[a-z]/.test(elem)) {
-            // console.log(`${elem} is leaf`);
-            // Leaf nodes have a single value
-            exprStack.push(new ValueExpression(elem));
-            // return currentExpr`;
-        } else if (/\d+/.test(elem)) {
-            // is numeric index
-            // evaluate the rule with this index
-            // console.log(`looked up rule with idx ${elem}`);
-            const rule = createRuleTree(ruleMap, parseInt(elem));
-            let currentExpr = exprStack.pop();
-            if (!currentExpr) {
-                // console.log(`adding new sequence starting with elem ${elem}`);
-                currentExpr = new SequenceExpression();
-            } else if (currentExpr instanceof OrExpression) {
-                // console.log(
-                //     `adding new sequence to existing OR expression starting with elem ${elem}`
-                // );
-                // currentExpr is a parent OR expression; replace it with a new Sequence
-                const or = currentExpr;
-                // if (!or) throw new Error(`popped too much`);
-                const newSequence = new SequenceExpression();
-                or.push(newSequence);
-                exprStack.push(or);
-                currentExpr = newSequence;
-            }
-            (currentExpr as InnerExpression).push(rule);
-            exprStack.push(currentExpr);
-        } else if (elem === '|') {
-            // OR expression
-            const currentExpr = exprStack.pop();
-            if (!currentExpr) throw new Error(`tried to pop a sequence off the stack`);
-            // console.log(`parsed OR`);
-            const or = new OrExpression();
-            or.push(currentExpr as Expression);
-            exprStack.push(or); // parent
-        } else {
-            throw new Error(`unknown elem "${elem}"`);
+const compileToRegex = (rules: RuleMap, maxRecursionDepth: number = 50): RegExp => {
+    const compile = (ruleNumber: number, depth: number = 0): string => {
+        const expr = rules[ruleNumber];
+        if (depth >= maxRecursionDepth) {
+            // console.log(`rule ${ruleNumber} bailing out at depth ${depth}`);
+            return ''; // bail out
         }
-    }
+        if (expr.includes('|')) {
+            // OR statement
+            const i = expr.indexOf('|');
+            const halves = [expr.slice(0, i), expr.slice(i + 1)].map((half) => {
+                return half.map((num) => compile(parseInt(num), depth + 1)).join('');
+            });
+            const seq = halves.map((half) => `(?:${half})`).join('|');
+            return `(${seq})`;
+        } else if (expr.length === 1 && /[ab]/.test(expr[0])) {
+            // leaf: return character
+            // console.log(`returning ${expr[0]}`);
+            return expr[0];
+        } else {
+            // sequence: just map over the numbers
+            const seq = expr.map((elem) => compile(parseInt(elem), depth + 1)).join('');
+            return `${seq}`;
+        }
+    };
 
-    return exprStack[0] as Expression;
+    const rawStr = compile(0);
+    // console.log(`new regex is ${rawStr}`);
+    return new RegExp(`^${rawStr}$`);
 };
