@@ -38,6 +38,7 @@
     },
     "homepage": "https://github.com/iwharris/aoc#readme",
     "devDependencies": {
+        "@commander-js/extra-typings": "^9.4.1",
         "@iwharris/eslint-config": "^0.1.1",
         "@iwharris/prettier-config": "^0.0.4",
         "@types/glob": "^8.0.0",
@@ -53,7 +54,7 @@
         "typescript": "^4.9.3"
     },
     "dependencies": {
-        "commander": "^6.2.0",
+        "commander": "^9.4.1",
         "glob": "^8.0.3"
     }
 }
