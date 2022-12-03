@@ -13,7 +13,7 @@ export const getName = (solution: Solution): string => {
 };
 
 export const parseId = (id: string): [number, number] => {
-    const [year, day] = id?.split('.').map((s) => parseInt(s));
+    const [year, day] = id.split('.').map((s) => parseInt(s));
     if (!year || !day) {
         throw new Error(`Cannot parse ID from "${id}": ID must be in the form YYYY.DD`);
     }

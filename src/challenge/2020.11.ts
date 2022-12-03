@@ -305,7 +305,9 @@ export class Solution extends BaseSolution {
             return changed;
         };
 
-        while (step()) {}
+        while (step()) {
+            // run to completion
+        }
 
         const occupied = grid.grid.filter((v) => v === Seat.OCCUPIED).length;
         return occupied.toString();

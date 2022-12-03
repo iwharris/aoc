@@ -281,7 +281,7 @@ export function* adjacencyGenerator3D(point: Point3D): Generator<Point3D> {
 
 export function* adjacencyGeneratorNDimension(
     point: PointN,
-    isRecursiveCall: boolean = false
+    isRecursiveCall = false
 ): Generator<PointN> {
     const smallerDimensions = point.slice(0, -1);
     const [dimension] = point.slice(-1);

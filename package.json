@@ -12,6 +12,8 @@
         "dev": "ts-node src/index.ts",
         "build": "tsc",
         "build:watch": "tsc -w",
+        "eslint": "eslint .",
+        "eslint:fix": "npm run eslint -- --fix .",
         "prettier": "prettier --check {src,test}/**/*.[jt]s",
         "prettier:fix": "prettier --write {src,test}/**/*.[jt]s",
         "test": "jest",
