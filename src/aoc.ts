@@ -77,17 +77,15 @@ const handleSolve = async (challengeId: string, command: commander.Command): Pro
 
     const parsedInput = solution.parseInput(rawInput);
 
-    const callbacks = [
-        () => (!!solution.solvePart1 ? solution.solvePart1(parsedInput) : null),
-        () => (!!solution.solvePart2 ? solution.solvePart2(parsedInput) : null),
-    ];
-
-    const results = callbacks.map((callback) => {
+    const results = [solution.solvePart1, solution.solvePart2].map((solutionCallback) => {
+        if (!solutionCallback) {
+            return '(not implemented)';
+        }
         try {
-            return callback();
+            return solutionCallback(parsedInput);
         } catch (err) {
             if (err instanceof NotImplementedError || /Method not implemented/.test(err.message))
-                return null;
+                return '(not implemented)';
             else throw err;
         }
     });

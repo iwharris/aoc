@@ -8,6 +8,12 @@ export type SolutionFunction = (lines: Input) => string;
 export interface Solution {
     new?: () => Solution;
 
+    /** Set to true to preserve empty lines when parsing input. */
+    readonly preserveEmptyLines: boolean;
+
+    /** Set to true to preserve leading/trailing whitespace when parsing input. */
+    readonly preserveWhitespace: boolean;
+
     /** Name of the challenge, eg. "Chronal Calibration" */
     name: string;
 
