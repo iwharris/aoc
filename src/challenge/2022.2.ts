@@ -51,7 +51,21 @@ export class Solution extends BaseSolution {
     }
 
     public solvePart2(lines: Input): string {
-        throw new NotImplementedError();
+        const scores = lines.map((line) => {
+            const tokens = line.split(' ');
+            const opp = tokens[0] as OpponentMove;
+            const me = tokens[1] as MyMove;
+
+            const desiredOutcome = MY_MOVE_OUTCOME_MAPPING[me];
+
+            const myMoveForDesiredOutcome = getMoveForDesiredOutcome(opp, desiredOutcome);
+
+            const myVal = MOVE_SCORES[myMoveForDesiredOutcome];
+
+            return OUTCOME_SCORES[desiredOutcome] + myVal;
+        });
+
+        return sum(scores).toString();
     }
 }
 
@@ -84,6 +98,32 @@ const getValueOfMyMove = (m: MyMove): number => {
     return MOVE_SCORES[MY_MOVE_MAPPING[m]];
 };
 
+const getMoveForDesiredOutcome = (oppMove: OpponentMove, desiredOutcome: Outcome): Move => {
+    const o = OPPONENT_MOVE_MAPPING[oppMove];
+    switch (desiredOutcome) {
+        case 'tie':
+            return o;
+        case 'win':
+            switch (o) {
+                case 'paper':
+                    return 'scissors';
+                case 'scissors':
+                    return 'rock';
+                case 'rock':
+                    return 'paper';
+            }
+        case 'loss':
+            switch (o) {
+                case 'paper':
+                    return 'rock';
+                case 'scissors':
+                    return 'paper';
+                case 'rock':
+                    return 'scissors';
+            }
+    }
+};
+
 type Move = 'rock' | 'paper' | 'scissors';
 type OpponentMove = 'A' | 'B' | 'C';
 type MyMove = 'X' | 'Y' | 'Z';
@@ -111,4 +151,10 @@ const MOVE_SCORES: Record<Move, number> = {
     rock: 1,
     paper: 2,
     scissors: 3,
+};
+
+const MY_MOVE_OUTCOME_MAPPING: Record<MyMove, Outcome> = {
+    X: 'loss',
+    Y: 'tie',
+    Z: 'win',
 };
