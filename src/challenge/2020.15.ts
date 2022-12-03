@@ -71,7 +71,7 @@ export class Solution extends BaseSolution {
 
 const solve = (input: number[], targetIteration: number): string => {
     const memory: Record<number, number> = {}; // mapping of number to an array of turn numbers (most recent last)
-    let lastValue: number = -1;
+    let lastValue = -1;
 
     for (let turn = 0; turn < input.length; turn++) {
         // speak the starting value

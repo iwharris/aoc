@@ -66,8 +66,8 @@ export class Solution extends BaseSolution {
     }
 
     solvePart2(lines: Input): string {
-        let found1: string = '';
-        let found2: string = '';
+        let found1 = '';
+        let found2 = '';
         for (let i = 0; i < lines.length; i += 1) {
             for (let j = i; j < lines.length; j += 1) {
                 const diff = getCharacterDifference(lines[i], lines[j]);

@@ -79,7 +79,7 @@ export class Solution extends BaseSolution {
         return graph.solvePart1();
     }
 
-    solvePart2(lines: Input, workerCount: number = 5, baseTaskCost = 60): string {
+    solvePart2(lines: Input, workerCount = 5, baseTaskCost = 60): string {
         const pairs = parseInput(lines);
         const scheduler = new TaskScheduler(pairs, workerCount, baseTaskCost);
 
@@ -179,7 +179,7 @@ interface Worker {
 class TaskScheduler {
     private graph: DependencyGraph;
     private workers: Worker[] = [];
-    private t: number = 0;
+    private t = 0;
     private inProgress: Set<Task> = new Set<Task>();
     private baseCost: number;
 

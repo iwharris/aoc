@@ -109,7 +109,7 @@ export class Solution extends BaseSolution {
 }
 
 class BitmaskEmulator {
-    mask: string = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
+    mask = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
     memory: Map<number, number> = new Map();
 
     parseLine(line: string): void {
@@ -150,7 +150,7 @@ class BitmaskEmulator {
 }
 
 class BitmaskEmulator2 {
-    mask: string = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
+    mask = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
     memory: Map<number, number> = new Map();
 
     parseLine(line: string): void {

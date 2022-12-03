@@ -123,7 +123,7 @@ export class Solution extends BaseSolution {
         return Number(result).toString();
     }
 
-    solvePart2(lines: Input, threshold: number = 10000): string {
+    solvePart2(lines: Input, threshold = 10000): string {
         const coords = lines.map(parseCoordinate);
         const [maxX, maxY] = computeLargestPoints(coords);
 

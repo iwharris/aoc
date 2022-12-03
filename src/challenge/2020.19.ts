@@ -187,8 +187,8 @@ type RawExpressionComponent = string;
 type RawExpression = RawExpressionComponent[];
 type RuleMap = Record<number, RawExpression>;
 
-const compileToRegex = (rules: RuleMap, maxRecursionDepth: number = 50): RegExp => {
-    const compile = (ruleNumber: number, depth: number = 0): string => {
+const compileToRegex = (rules: RuleMap, maxRecursionDepth = 50): RegExp => {
+    const compile = (ruleNumber: number, depth = 0): string => {
         const expr = rules[ruleNumber];
         if (depth >= maxRecursionDepth) {
             // console.log(`rule ${ruleNumber} bailing out at depth ${depth}`);

@@ -84,14 +84,14 @@ export class Solution extends BaseSolution {
     What is the encryption weakness in your XMAS-encrypted list of numbers?
     `;
 
-    solvePart1(lines: Input, preambleLength: number = 25): string {
+    solvePart1(lines: Input, preambleLength = 25): string {
         const result = solveXmas(lines, preambleLength);
         if (!result) throw new Error(`couldnt find it`);
         const [value] = result;
         return value.toString();
     }
 
-    solvePart2(lines: Input, preambleLength: number = 25): string {
+    solvePart2(lines: Input, preambleLength = 25): string {
         const result = solveXmas(lines, preambleLength);
         if (!result) throw new Error(`couldnt find it`);
         const [target, startIdx] = result;

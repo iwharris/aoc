@@ -14,6 +14,8 @@
         "build:watch": "tsc -w",
         "eslint": "eslint .",
         "eslint:fix": "npm run eslint -- --fix .",
+        "lint": "npm run -s prettier && npm run -s eslint",
+        "lint:fix": "npm run -s prettier:fix && npm run -s eslint:fix",
         "prettier": "prettier --check {src,test}/**/*.[jt]s",
         "prettier:fix": "prettier --write {src,test}/**/*.[jt]s",
         "test": "jest",
@@ -21,7 +23,7 @@
     },
     "husky": {
         "hooks": {
-            "pre-commit": "npm run -s prettier"
+            "pre-commit": "npm run -s lint"
         }
     },
     "repository": {

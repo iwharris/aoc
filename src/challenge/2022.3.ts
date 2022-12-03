@@ -1,6 +1,5 @@
 import { BaseSolution } from '../solution';
 import { Input } from '../types';
-import { NotImplementedError } from '../util/error';
 import { sum, zip } from '../util/fp';
 
 export class Solution extends BaseSolution {
@@ -37,8 +36,6 @@ export class Solution extends BaseSolution {
     Find the item type that appears in both compartments of each rucksack. What is the sum of the priorities of those item types?
     `;
 
-    preserveEmptyLines = true;
-
     public solvePart1(lines: Input): string {
         return sum(
             lines.map((line) => {
@@ -54,9 +51,9 @@ export class Solution extends BaseSolution {
         ).toString();
     }
 
-    public solvePart2(lines: Input): string {
-        throw new NotImplementedError();
-    }
+    // public solvePart2(lines: Input): string {
+    //     throw new NotImplementedError();
+    // }
 }
 
 const parseRucksacks = (line: string): [string, string] => {
