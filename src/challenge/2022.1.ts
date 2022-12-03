@@ -1,6 +1,6 @@
 import { BaseSolution } from '../solution';
 import { Input } from '../types';
-import { max } from '../util/fp';
+import { max, sum } from '../util/fp';
 
 export class Solution extends BaseSolution {
     description = `
@@ -46,27 +46,34 @@ export class Solution extends BaseSolution {
     preserveEmptyLines = true;
 
     public solvePart1(lines: Input): string {
-        const groups: number[] = [];
-
-        let total = 0;
-        for (const line of lines) {
-            console.log(line);
-            if (line === '') {
-                if (total > 0) {
-                    groups.push(total);
-                }
-                total = 0;
-            } else {
-                total += parseInt(line);
-            }
-        }
-
-        console.log(groups);
+        const groups = parseGroups(lines);
 
         return max(groups)?.toString() || 'not found';
     }
 
     public solvePart2(lines: Input): string {
-        throw new Error('Method not implemented.');
+        const groups = parseGroups(lines);
+
+        const topThree = groups.sort((a, b) => b - a).slice(0, 3);
+
+        return sum(topThree).toString();
     }
 }
+
+const parseGroups = (lines: Input) => {
+    const groups: number[] = [];
+
+    let total = 0;
+    for (const line of lines) {
+        if (line === '') {
+            if (total > 0) {
+                groups.push(total);
+            }
+            total = 0;
+        } else {
+            total += parseInt(line);
+        }
+    }
+
+    return groups;
+};
