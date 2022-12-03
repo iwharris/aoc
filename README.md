@@ -1,4 +1,4 @@
-[![CircleCI](https://circleci.com/gh/iwharris/aoc.svg?style=svg)](https://circleci.com/gh/iwharris/aoc) [![codecov](https://codecov.io/gh/iwharris/aoc/branch/master/graph/badge.svg)](https://codecov.io/gh/iwharris/aoc)
+[![master build status](https://github.com/iwharris/aoc/actions/workflows/build.yaml/badge.svg?branch=master)](https://github.com/iwharris/aoc/actions/workflows/build.yaml)
 
 # aoc
 
@@ -12,24 +12,35 @@ Clone the repository:
 git clone git@github.com:iwharris/aoc.git
 ```
 
-Compile typescript:
+Lint, format, and compile typescript:
 
 ```bash
 npm run build
 ```
 
-## Code Style
-
-Using `prettier`, check that files are formatted properly:
+Run the CLI:
 
 ```bash
+npm run dev
+```
+
+## Code Style
+
+Using `prettier` and `eslint`, check that files are formatted properly:
+
+```bash
+# Run prettier and eslint
+npm run lint
+
+# To run prettier and eslint individually
 npm run prettier
+npm run eslint
 ```
 
 To automatically fix formatting:
 
 ```bash
-npm run prettier:fix
+npm run lint:fix
 ```
 
 ## Testing
