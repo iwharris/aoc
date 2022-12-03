@@ -12,16 +12,26 @@ Clone the repository:
 git clone git@github.com:iwharris/aoc.git
 ```
 
-Lint, format, and compile typescript:
+Run the CLI, skipping compilation:
 
 ```bash
-npm run build
+# See usage instructions for the CLI
+npm run dev
+
+# To solve a challenge with an input file
+npm run dev solve 2022.1 < input/2022.1.txt
 ```
 
-Run the CLI:
+Run the CLI by compiling and then executing the compiled JS:
 
 ```bash
-npm run dev
+npm run compile
+
+# Then, run through npm
+npm run aoc solve 2022.1 < input/2022.1.txt
+
+# Or run with node:
+node dist/src/index.js solve 2022.1 < input/2022.1.txt
 ```
 
 ## Code Style
