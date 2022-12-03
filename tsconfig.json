@@ -6,7 +6,7 @@
         "resolveJsonModule": true,
         "esModuleInterop": true,
         "downlevelIteration": true,
-        "lib": ["es2016", "es2017", "ES2019", "dom"],
+        "lib": ["ESNext", "dom"],
 
         "alwaysStrict": true,
 
@@ -14,8 +14,10 @@
         "strictBindCallApply": true,
         "strictFunctionTypes": true,
         "strictPropertyInitialization": true,
-        "incremental": true
+        "incremental": true,
     },
-    "include": ["src/**/*"],
-    "exclude": []
+    "include": [
+        "src/**/*.ts",
+        "package.json"
+    ]
 }
