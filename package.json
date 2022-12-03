@@ -10,8 +10,9 @@
     "scripts": {
         "aoc": "node dist/src/index.js",
         "dev": "ts-node src/index.ts",
-        "build": "tsc",
-        "build:watch": "tsc -w",
+        "build": "npm run -s lint && npm run -s compile",
+        "compile": "tsc",
+        "compile:watch": "tsc -w",
         "eslint": "eslint .",
         "eslint:fix": "npm run eslint -- --fix .",
         "lint": "npm run -s prettier && npm run -s eslint",
