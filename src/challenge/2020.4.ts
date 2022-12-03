@@ -156,13 +156,15 @@ type PassportField = 'byr' | 'iyr' | 'eyr' | 'hgt' | 'hcl' | 'ecl' | 'pid' | 'ci
 
 type Validator = (val: string) => boolean;
 
-const validateYear = (min: number, max: number): Validator => (val) => {
-    if (/\d{4}/.test(val)) {
-        const year = parseInt(val);
-        return year >= min && year <= max;
-    }
-    return false;
-};
+const validateYear =
+    (min: number, max: number): Validator =>
+    (val) => {
+        if (/\d{4}/.test(val)) {
+            const year = parseInt(val);
+            return year >= min && year <= max;
+        }
+        return false;
+    };
 
 const validators: Record<PassportField | string, Validator> = {
     byr: validateYear(1920, 2002),

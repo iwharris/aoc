@@ -213,7 +213,7 @@ export class Grid<V = any> {
 
     public static loadFromStrings = <V = any>(
         rows: string[],
-        transformer: LoaderCallback<V> = (char) => (char as unknown) as V
+        transformer: LoaderCallback<V> = (char) => char as unknown as V
     ): Grid<V> => {
         const height = rows.length;
         if (!height) throw new Error(`Cannot create Grid from empty string array`);

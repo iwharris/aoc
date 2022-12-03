@@ -28,7 +28,8 @@ export interface Graph<TKey extends NodeKey, TVertexValue = any, TEdgeValue = an
 }
 
 export class DirectedGraph<TKey extends NodeKey, TVertexValue = any, TEdgeValue = any>
-    implements Graph<TKey, TVertexValue, TEdgeValue> {
+    implements Graph<TKey, TVertexValue, TEdgeValue>
+{
     protected readonly vertices: Map<TKey, TVertexValue>;
     protected readonly edges: Map<TKey, Map<TKey, TEdgeValue>>;
 

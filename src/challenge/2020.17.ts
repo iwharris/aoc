@@ -225,7 +225,7 @@ class ConwayND {
     }
 
     point(key: Key): PointN {
-        return (key.split(',').map((v) => parseInt(v)) as unknown) as PointN;
+        return key.split(',').map((v) => parseInt(v)) as unknown as PointN;
     }
 
     step(): void {

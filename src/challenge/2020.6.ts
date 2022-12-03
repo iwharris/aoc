@@ -110,10 +110,7 @@ const parseGroups = (lines: Input): Answers[][] => {
         .join(':')
         .split(',')
         .map((group) => {
-            return group
-                .trim()
-                .split(':')
-                .filter(Boolean);
+            return group.trim().split(':').filter(Boolean);
         })
         .filter((e) => e.length > 0)
         .map((group) => {
