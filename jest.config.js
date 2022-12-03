@@ -5,11 +5,14 @@ module.exports = {
     testEnvironment: 'node',
     testRegex: '/test/.*\\.(test|spec)?\\.(ts)$',
     moduleFileExtensions: ['ts', 'js'],
-    globals: {
-        'ts-jest': {
-            tsconfig: {
-                importHelpers: true,
+    transform: {
+        '\\.[jt]sx?$': [
+            'ts-jest',
+            {
+                tsconfig: {
+                    importHelpers: true,
+                },
             },
-        },
+        ],
     },
 };

@@ -4,7 +4,7 @@ import { Solution } from '../types';
 
 export const DEFAULT_ENCODING = 'utf8';
 
-export const readInputFromStdin = (encoding: string = DEFAULT_ENCODING): string => {
+export const readInputFromStdin = (encoding: BufferEncoding = DEFAULT_ENCODING): string => {
     const data = readFileSync(0, encoding); // Read data from stdin
 
     return data;
@@ -12,7 +12,7 @@ export const readInputFromStdin = (encoding: string = DEFAULT_ENCODING): string 
 
 export const readInputFromFile = async (
     path: string,
-    encoding: string = DEFAULT_ENCODING
+    encoding: BufferEncoding = DEFAULT_ENCODING
 ): Promise<string> => {
     const data = await fs.promises.readFile(path, { encoding });
 
