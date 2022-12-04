@@ -37,7 +37,11 @@ async function handleList({ year }: HandleListOpts): Promise<void> {
     const solutions = await getSolutions();
     const sortedSolutions = Object.entries(solutions)
         .filter(([id]) => (year ? year === id.split('.')[0] : true))
-        .sort(([id1], [id2]) => Number(id1) - Number(id2));
+        .sort(([id1], [id2]) => {
+            const [year1, day1] = parseId(id1);
+            const [year2, day2] = parseId(id2);
+            return year1 - year2 || day1 - day2;
+        });
 
     let currentYear = -1;
     sortedSolutions.forEach(([id, solution]) => {
