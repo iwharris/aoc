@@ -3,7 +3,13 @@ import { Command } from '@commander-js/extra-typings';
 import { glob } from 'glob';
 import util from 'util';
 import { version, description } from '../package.json';
-import { DEFAULT_ENCODING, getIdFromPath, readInputFromFile, readInputFromStdin } from './util/io';
+import {
+    DEFAULT_ENCODING,
+    fileExists,
+    getIdFromPath,
+    readInputFromFile,
+    readInputFromStdin,
+} from './util/io';
 import { parseId, normalizeId } from './util/helper';
 import { Solution, SolutionMap } from './types';
 import { importSolutionDynamically } from './util/io';
@@ -70,11 +76,24 @@ async function handleInfo(challengeId: string): Promise<void> {
 type HandleSolveOpts = {
     encoding?: string;
     inputFile?: string;
+    autoInput?: boolean;
 };
 async function handleSolve(challengeId: string, opts: HandleSolveOpts): Promise<void> {
     const id = normalizeId(challengeId);
 
     const encoding = opts.encoding ? (opts.encoding as BufferEncoding) : undefined;
+
+    if (opts.autoInput) {
+        const globPattern = `${require.main?.path}/../input/${challengeId}.txt`;
+
+        const filePath = await globAsync(globPattern);
+
+        if (filePath.length > 0) {
+            // eslint-disable-next-line no-console
+            console.debug(`Loading input from ${filePath}.`);
+            opts.inputFile = filePath[0];
+        }
+    }
 
     const rawInput = opts.inputFile
         ? await readInputFromFile(opts.inputFile, encoding)
@@ -131,6 +150,10 @@ const parseArgs = (args: string[]) => {
             '-e, --encoding <encoding>',
             'Optional encoding for the input data',
             DEFAULT_ENCODING
+        )
+        .option(
+            '-a, --auto-input',
+            'Automatically loads challenge input from the input/ directory if it exists'
         )
         .action(handleSolve);
 

@@ -1,8 +1,12 @@
-import { readFileSync } from 'fs';
+import { PathLike, readFileSync, existsSync } from 'fs';
 import fs from 'fs';
 import { Solution } from '../types';
 
 export const DEFAULT_ENCODING: BufferEncoding = 'utf8';
+
+export const fileExists = (path: PathLike) => {
+    return existsSync(path);
+};
 
 export const readInputFromStdin = (encoding: BufferEncoding = DEFAULT_ENCODING): string => {
     const data = readFileSync(0, encoding); // Read data from stdin
