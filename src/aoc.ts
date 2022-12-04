@@ -3,13 +3,7 @@ import { Command } from '@commander-js/extra-typings';
 import { glob } from 'glob';
 import util from 'util';
 import { version, description } from '../package.json';
-import {
-    DEFAULT_ENCODING,
-    fileExists,
-    getIdFromPath,
-    readInputFromFile,
-    readInputFromStdin,
-} from './util/io';
+import { DEFAULT_ENCODING, getIdFromPath, readInputFromFile, readInputFromStdin } from './util/io';
 import { parseId, normalizeId } from './util/helper';
 import { Solution, SolutionMap } from './types';
 import { importSolutionDynamically } from './util/io';
@@ -83,21 +77,30 @@ async function handleSolve(challengeId: string, opts: HandleSolveOpts): Promise<
 
     const encoding = opts.encoding ? (opts.encoding as BufferEncoding) : undefined;
 
-    if (opts.autoInput) {
+    if (opts.autoInput && !opts.inputFile) {
         const globPattern = `${require.main?.path}/../input/${challengeId}.txt`;
 
-        const filePath = await globAsync(globPattern);
+        try {
+            const filePath = await globAsync(globPattern);
 
-        if (filePath.length > 0) {
-            // eslint-disable-next-line no-console
-            console.debug(`Loading input from ${filePath}.`);
-            opts.inputFile = filePath[0];
+            if (filePath.length > 0) {
+                // eslint-disable-next-line no-console
+                console.debug(`Loading input from ${filePath}.`);
+                opts.inputFile = filePath[0];
+            }
+        } catch (e) {
+            console.warn(`Could not auto-read an input file from '${globPattern}', skipping...`);
         }
     }
 
     const rawInput = opts.inputFile
         ? await readInputFromFile(opts.inputFile, encoding)
         : readInputFromStdin(encoding);
+
+    if (!rawInput) {
+        console.warn('Cannot read input, bailing out.');
+        return;
+    }
 
     const solution = await getSolution(id);
 

@@ -9,18 +9,28 @@ export const fileExists = (path: PathLike) => {
 };
 
 export const readInputFromStdin = (encoding: BufferEncoding = DEFAULT_ENCODING): string => {
-    const data = readFileSync(0, encoding); // Read data from stdin
+    try {
+        const data = readFileSync(0, encoding); // Read data from stdin
 
-    return data;
+        return data;
+    } catch (e) {
+        console.warn(`Could not read input from stdin: ${e.message}`);
+        return '';
+    }
 };
 
 export const readInputFromFile = async (
     path: string,
     encoding: BufferEncoding = DEFAULT_ENCODING
 ): Promise<string> => {
-    const data = await fs.promises.readFile(path, { encoding });
+    try {
+        const data = await fs.promises.readFile(path, { encoding });
 
-    return data.toString();
+        return data.toString();
+    } catch (e) {
+        console.warn(`Could not read input file from '${path}': ${e.message}`);
+        return readInputFromStdin(encoding);
+    }
 };
 
 export const importSolutionDynamically = async (path: string): Promise<Solution> => {
