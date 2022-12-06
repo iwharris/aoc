@@ -172,17 +172,6 @@ const moveBoxesAndPrintResult = (stacks: Stacks, moves: Move[], isMultiMove: boo
         }
 
         stacks[to].push(...boxes);
-
-        // if (!isMultiMove) {
-        //     for (let i = 0; i < qty; i++) {
-        //         const box = stacks[from].pop();
-        //         if (!box) {
-        //             throw new Error(`Tried to move a nonexistent box`);
-        //         }
-        //         stacks[to].push(box);
-        //     }
-        // } else {
-        // }
     }
 
     // Peek the top box of each stack
