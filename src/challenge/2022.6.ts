@@ -48,16 +48,18 @@ export class Solution extends BaseSolution {
     `;
 
     public solvePart1(lines: Input): string {
-        const result =
-            lines[0].split('').findIndex((_, i, all) => new Set(all.slice(i, i + 4)).size === 4) +
-            4;
-        return result.toString();
+        return findPacketIndex(lines[0].split(''), 4).toString();
     }
 
     public solvePart2(lines: Input): string {
-        const result =
-            lines[0].split('').findIndex((_, i, all) => new Set(all.slice(i, i + 14)).size === 14) +
-            14;
-        return result.toString();
+        return findPacketIndex(lines[0].split(''), 14).toString();
     }
 }
+
+const findPacketIndex = (chars: string[], packetLength: number): number => {
+    const isUniqueSequence = (seq: string[]): boolean => new Set(seq).size === packetLength;
+
+    return chars.findIndex((_ignore, idx) =>
+        isUniqueSequence(chars.slice(idx - packetLength, idx))
+    );
+};
