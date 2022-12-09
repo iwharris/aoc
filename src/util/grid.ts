@@ -1,3 +1,5 @@
+import { assert } from 'console';
+
 export type Point = [number, number];
 export type Point3D = [number, number, number];
 export type PointN = number[];
@@ -143,6 +145,20 @@ export class Grid<V = any> {
             for (let x = 0; x < this.width; x++) {
                 yield [x, y] as Point;
             }
+        }
+    }
+
+    public *pointsInRow(row: number): Generator<Point> {
+        assert(row >= 0 && row < this.height);
+        for (let x = 0; x < this.width; x++) {
+            yield [x, row];
+        }
+    }
+
+    public *pointsInColumn(column: number): Generator<Point> {
+        assert(column >= 0 && column < this.height);
+        for (let y = 0; y < this.height; y++) {
+            yield [column, y];
         }
     }
 
