@@ -12,7 +12,7 @@ export const min = (array: number[]): number | undefined => {
     return array.reduce((prev, cur) => (cur < prev ? cur : prev), Infinity);
 };
 
-export const product = (array: number[]): number | undefined => {
+export const product = (array: number[]): number => {
     if (!array || array.length === 0) return NaN;
     return array.reduce((prev, cur) => prev * cur, 1);
 };
