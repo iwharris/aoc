@@ -118,23 +118,27 @@ export class Grid<V = any> {
      */
     public *adjacentPointGenerator(
         origin: Point,
-        options: { includeOutOfBoundsPoints: boolean } = { includeOutOfBoundsPoints: false }
+        options: { includeOutOfBoundsPoints?: boolean; orthogonalOnly?: boolean } = {
+            includeOutOfBoundsPoints: false,
+            orthogonalOnly: false,
+        }
     ): Generator<Point, void, void> {
         const [x, y] = origin;
+        const { includeOutOfBoundsPoints, orthogonalOnly } = options;
 
-        const allPoints: Point[] = [
-            [x - 1, y - 1],
+        const allPoints = [
+            orthogonalOnly ? null : [x - 1, y - 1],
             [x, y - 1],
-            [x + 1, y - 1],
+            orthogonalOnly ? null : [x + 1, y - 1],
             [x - 1, y],
             [x + 1, y],
-            [x - 1, y + 1],
+            orthogonalOnly ? null : [x - 1, y + 1],
             [x, y + 1],
-            [x + 1, y + 1],
-        ];
+            orthogonalOnly ? null : [x + 1, y + 1],
+        ].filter(Boolean) as Point[];
 
         for (const point of allPoints) {
-            if (options.includeOutOfBoundsPoints || this.isInBounds(point)) {
+            if (includeOutOfBoundsPoints || this.isInBounds(point)) {
                 yield point;
             }
         }
