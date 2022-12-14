@@ -1,6 +1,6 @@
 import { BaseSolution } from '../solution';
 import { Input } from '../types';
-import { sum } from '../util/fp';
+import { product, sum } from '../util/fp';
 
 export class Solution extends BaseSolution {
     description = `
@@ -112,6 +112,39 @@ export class Solution extends BaseSolution {
     What are the indices of the pairs that are already in the right order? (The first pair has index 1, the second pair has index 2, and so on.) In the above example, the pairs in the right order are 1, 2, 4, and 6; the sum of these indices is 13.
     
     Determine which pairs of packets are already in the right order. What is the sum of the indices of those pairs?
+
+    --- Part Two ---
+    Now, you just need to put all of the packets in the right order. Disregard the blank lines in your list of received packets.
+
+    The distress signal protocol also requires that you include two additional divider packets:
+
+    [[2]]
+    [[6]]
+    Using the same rules as before, organize all packets - the ones in your list of received packets as well as the two divider packets - into the correct order.
+
+    For the example above, the result of putting the packets in the correct order is:
+
+    []
+    [[]]
+    [[[]]]
+    [1,1,3,1,1]
+    [1,1,5,1,1]
+    [[1],[2,3,4]]
+    [1,[2,[3,[4,[5,6,0]]]],8,9]
+    [1,[2,[3,[4,[5,6,7]]]],8,9]
+    [[1],4]
+    [[2]]
+    [3]
+    [[4,4],4,4]
+    [[4,4],4,4,4]
+    [[6]]
+    [7,7,7]
+    [7,7,7,7]
+    [[8,7,6]]
+    [9]
+    Afterward, locate the divider packets. To find the decoder key for this distress signal, you need to determine the indices of the two divider packets and multiply them together. (The first packet is at index 1, the second packet is at index 2, and so on.) In this example, the divider packets are 10th and 14th, and so the decoder key is 140.
+
+    Organize all of the packets into the correct order. What is the decoder key for the distress signal?
     `;
 
     public solvePart1(lines: Input): string {
@@ -122,29 +155,43 @@ export class Solution extends BaseSolution {
         }
 
         const matchingIndices = pairs.map(([left, right], index) =>
-            compare(left, right) === 'match' ? index + 1 : 0
+            compare(left, right) === 1 ? index + 1 : 0
         );
 
         return sum(matchingIndices).toString();
     }
 
     public solvePart2(lines: Input): string {
-        return '';
+        const packets: Node[] = lines.map((line) => JSON.parse(line) as Node);
+
+        const dividers: Node[] = [[[2]], [[6]]];
+
+        const sorted = [...packets, ...dividers]
+            .sort(
+                (left: Node, right: Node) =>
+                    (compare(right, left) as number) - (compare(left, right) as number)
+            )
+            .map((el) => JSON.stringify(el));
+
+        const indices = dividers
+            .map((div) => JSON.stringify(div))
+            .map((div) => sorted.findIndex((el) => el === div) + 1);
+        return product(indices).toString();
     }
 }
 
 type Node = number | Node[];
-type Result = 'match' | 'no-match' | 'continue';
+type Result = 1 | 0 | null;
 
 const compare = (left: Node, right: Node): Result => {
     if (Number.isInteger(left) && Number.isInteger(right)) {
-        if (left === right) return 'continue';
-        else if (left < right) return 'match';
-        else if (left > right) return 'no-match';
+        if (left === right) return null;
+        else if (left < right) return 1;
+        else if (left > right) return 0;
     } else if (Array.isArray(left) && Array.isArray(right)) {
         for (let i = 0; i < Math.min(left.length, right.length); i += 1) {
             const result = compare(left[i], right[i]);
-            if (result !== 'continue') return result;
+            if (result !== null) return result;
         }
 
         return compare(left.length, right.length);
