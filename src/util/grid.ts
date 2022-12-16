@@ -110,6 +110,30 @@ export class Grid<V = any> {
         }
     }
 
+    /** Returns points along a vertical or horizontal line */
+    public *cardinalDirectionLineGenerator([x0, y0]: Point, [x1, y1]: Point): Generator<Point> {
+        assert(
+            x0 === x1 || y0 === y1,
+            'Endpoints of cardinal line must have the same x or y value'
+        );
+
+        if (x0 === x1 && y0 === y1) {
+            yield [x0, y0];
+        } else if (y0 === y1) {
+            // horizontal line
+            const step = x0 < x1 ? 1 : -1;
+            for (let i = x0; i !== x1 + step; i += step) {
+                yield [i, y0];
+            }
+        } else if (x0 === x1) {
+            // vertical line
+            const step = y0 < y1 ? 1 : -1;
+            for (let i = y0; i !== y1 + step; i += step) {
+                yield [x0, i];
+            }
+        }
+    }
+
     /**
      * Generates up to eight Points adjacent to an origin.
      *
