@@ -341,21 +341,22 @@ export class Solution extends BaseSolution {
     public solvePart1(lines: Input): string {
         const iterations = 2022;
         const t = Tetris.fromInput(lines, iterations * 4 + 1000);
-        for (let tickCount = 0; tickCount < iterations; tickCount += 1) {
-            t.tick();
-        }
 
-        return (t.highestLine + 1).toString();
+        return t.solve(2022).toString();
     }
 
     public solvePart2(lines: Input): string {
-        return '';
+        const t = Tetris.fromInput(lines, 10000000); // use a buffer that is smaller than the real input - we'll calculate the answer from a pattern
+
+        return t.solve(1000000000000).toString();
+        // return '';
     }
 }
 
 const CHANNEL_WIDTH = 7;
 
 class Tetris {
+    public tickNum = 0;
     /** How many shapes have been dropped */
     public shapeCounter = 0;
     public moveCounter = 0;
@@ -370,47 +371,86 @@ class Tetris {
         this.state = new Uint8Array(bufferLines);
     }
 
-    public tick() {
-        const shape = this.getNextShape();
+    public solve(count: number) {
+        const lengths: number[] = [];
+        let lastLength = 0;
 
-        // Spawn the shape so the bottom edge is 3 spaces above the highest block (or floor)
-        // the index is for the top of the shape
-        const startingIndex = this.highestLine + 3 + shape.length;
-        // console.log(`\nspawning shape at idx=${startingIndex}`);
+        while (this.tickNum < count) {
+            // = `${this.shapeCounter % this.MASKS.length}-${
+            //     this.moveCounter % this.MOVES.length
+            // }`;
+            // console.log(`[${this.tickNum}] ${cacheKey}`);
 
-        for (let i = startingIndex; i >= 0; i -= 1) {
-            // console.log(`top of shape is at index ${i}`);
-            const move = this.getNextMove();
-            // Handle lateral move
-            if (this.canMoveLateral(move, shape, i)) {
-                // console.log(`moving ${move}`);
-                shape.forEach((m, i) => (shape[i] = move === '<' ? m << 1 : m >> 1));
-            } else {
-                // console.log(`cannot move ${move}, blocked by wall or intersection`);
+            const shape = [...this.MASKS[this.shapeCounter % this.MASKS.length]];
+            this.shapeCounter += 1;
+
+            // Spawn the shape so the bottom edge is 3 spaces above the highest block (or floor)
+            // the index is for the top of the shape
+            const startingIndex = this.highestLine + 3 + shape.length;
+            // console.log(`\nspawning shape at idx=${startingIndex}`);
+
+            // land the rock
+            for (let i = startingIndex; i >= 0; i -= 1) {
+                // console.log(`top of shape is at index ${i}`);
+                const move = this.MOVES[this.moveCounter % this.MOVES.length];
+                this.moveCounter += 1;
+
+                // Handle lateral move
+                if (this.canMoveLateral(move, shape, i)) {
+                    // console.log(`moving ${move}`);
+                    shape.forEach((m, i) => (shape[i] = move === '<' ? m << 1 : m >> 1));
+                } else {
+                    // console.log(`cannot move ${move}, blocked by wall or intersection`);
+                }
+
+                // console.log(`after lateral move, shapemask is\n${shape.map(maskToStr).join('\n')}`);
+
+                // drop the shape until it stops
+                // check for collision if the shape drops one row
+
+                if (this.intersects(shape, i - 1)) {
+                    // if there is any intersection, lock the shape into state and bail out of the falling loop
+                    // console.log('if the shape drops one more line, it will collide');
+                    shape.forEach((lineMask, lineIndex) => {
+                        this.state[i - lineIndex] |= lineMask;
+
+                        assert(!(this.state[i - lineIndex] & 0b10000000));
+                    });
+
+                    // then update highestLine to be the top edge of the shape
+                    this.highestLine = Math.max(this.highestLine, i);
+                    break;
+                }
             }
 
-            // console.log(`after lateral move, shapemask is\n${shape.map(maskToStr).join('\n')}`);
+            // console.log(`\nheight=${this.highestLine + 1})`);
+            // console.log(this.getDebugState());
 
-            // drop the shape until it stops
-            // check for collision if the shape drops one row
+            // chamber = chamber.slice(chamber.findIndex((r) => r !== 0b100000001));
+            // Keep track of chamber length deltas
+            lengths.push(this.highestLine + 1 - lastLength);
+            lastLength = this.highestLine + 1;
 
-            if (this.intersects(shape, i - 1)) {
-                // if there is any intersection, lock the shape into state and bail out of the falling loop
-                // console.log('if the shape drops one more line, it will collide');
-                shape.forEach((lineMask, lineIndex) => {
-                    this.state[i - lineIndex] |= lineMask;
+            if (this.tickNum > 5000) {
+                // Find longest sequnce and its pattern
+                const [sequence, seqIndex] = findSequence(lengths);
+                // console.log(sequence, seqIndex);
+                const pattern = findPattern(sequence);
+                const patternHeight = pattern.reduce((s, v) => s + v);
+                const repetitions = Math.trunc((count - seqIndex) / pattern.length);
+                const rocksPostSeq = (count - seqIndex) % pattern.length;
+                const preAndPostSeqHeight = pattern
+                    .slice(0, rocksPostSeq)
+                    .concat(lengths.slice(0, seqIndex))
+                    .reduce((s, v) => s + v);
 
-                    assert(!(this.state[i - lineIndex] & 0b10000000));
-                });
-
-                // then update highestLine to be the top edge of the shape
-                this.highestLine = Math.max(this.highestLine, i);
-                break;
+                return preAndPostSeqHeight + repetitions * patternHeight;
             }
+
+            this.tickNum += 1;
         }
 
-        // console.log(`\nheight=${this.highestLine + 1})`);
-        // console.log(this.getDebugState());
+        return lastLength;
     }
 
     private canMoveLateral(direction: Move, shape: ShapeMask, idx: number) {
@@ -442,19 +482,6 @@ class Tetris {
             shape.some((lineMask, lineIdx) => lineMask & this.state[idx - lineIdx]) || // any part of the shape intersects an already-stopped rock
             idx - shape.length + 1 < 0 // any part of the shape intersects the floor
         );
-    }
-
-    private getNextMove(): Move {
-        const move = this.MOVES[this.moveCounter % this.MOVES.length];
-        this.moveCounter += 1;
-        return move;
-    }
-
-    private getNextShape(): number[] {
-        // mae a copy of the shape array
-        const shape = [...this.MASKS[this.shapeCounter % this.MASKS.length]];
-        this.shapeCounter += 1;
-        return shape;
     }
 
     static fromInput(lines: Input, bufferLines: number) {
@@ -490,3 +517,43 @@ const SHAPE_MASKS: ShapeMask[] = [
     [0b0010000, 0b0010000, 0b0010000, 0b0010000], // | shape
     [0b0011000, 0b0011000], // square shape
 ];
+
+const findPattern = (arr) => {
+    const dp = arr.map((_) => 0);
+    for (let i = 1; i < dp.length; i++) {
+        let k = dp[i - 1];
+        let done = false;
+        while (!done) {
+            if (arr[i] === arr[k]) {
+                dp[i] = k + 1;
+                done = true;
+            } else if (k === 0) {
+                dp[i] = 0;
+                done = true;
+            } else {
+                k = dp[k - 1];
+            }
+        }
+    }
+    return arr.slice(0, arr.length - dp.at(-1));
+};
+
+const findSequence = (arr) => {
+    const dp = Array.from({ length: arr.length + 1 }).map((_) => Array(arr.length + 1).fill(0));
+    let seqLength = 0;
+    let index = 0;
+    arr.forEach((a, i) => {
+        for (let j = i + 2; j <= arr.length; j++) {
+            if (a === arr[j - 1] && dp[i][j - 1] < j - i) {
+                dp[i + 1][j] = dp[i][j - 1] + 1;
+                if (dp[i + 1][j] > seqLength) {
+                    seqLength = dp[i + 1][j];
+                    index = Math.max(i + 1, index);
+                }
+            } else {
+                dp[i + 1][j] = 0;
+            }
+        }
+    });
+    return [arr.slice(index - seqLength, index), index - seqLength];
+};
