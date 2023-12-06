@@ -18,3 +18,6 @@ export const product = (array: number[]): number => {
 };
 
 export const sum = (array: number[]): number => array.reduce((prev, cur) => prev + cur, 0);
+
+/** Useful for map() calls since it doesn't accept a radix arg. eg. ['1','2','3'].map(toNum) */
+export const toNum = (s: string) => parseInt(s);
