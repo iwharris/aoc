@@ -115,7 +115,7 @@ async function handleSolve(challengeId: string, opts: HandleSolveOpts): Promise<
             return '(not implemented)';
         }
         try {
-            return solutionCallback(parsedInput);
+            return solutionCallback.bind(solution)(parsedInput);
         } catch (err) {
             if (err instanceof NotImplementedError || /Method not implemented/.test(err.message))
                 return '(not implemented)';
