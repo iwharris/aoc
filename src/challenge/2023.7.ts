@@ -83,11 +83,11 @@ const calculateHandType = (histogram: Histogram): HandType => {
 };
 
 const optimizeHandType = (histogram: Histogram): HandType => {
-    const originalHandType = calculateHandType(histogram);
     const nGroups = Object.keys(histogram).length;
     const gSizes = Object.values(histogram);
     const jCount = histogram.J;
-    if (!jCount) return originalHandType;
+    // No jokers; just fall back to part 1 calculation
+    if (!jCount) return calculateHandType(histogram);
     // We got jokers, time to party
     else if (jCount === 5) return 'FIVE_OF_A_KIND';
     // similarly, 4 jokers means that we can make a 5 of a kind by matching the remaining card
