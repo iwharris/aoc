@@ -1,5 +1,6 @@
 import { BaseSolution } from '../solution';
 import { Input } from '../types';
+import { lcm } from '../util/math';
 
 export class Solution extends BaseSolution {
     description = `
@@ -74,18 +75,4 @@ type Node = {
 const parseNode = (line: string): Node => {
     const [, id, L, R] = line.match(/^(\w+)\s=\s\((\w+),\s(\w+)\)/) ?? [];
     return { id, L, R };
-};
-
-const gcd = (a, b) => {
-    for (let temp = b; b !== 0; ) {
-        b = a % b;
-        a = temp;
-        temp = b;
-    }
-    return a;
-};
-
-const lcm = (a, b) => {
-    const gcdValue = gcd(a, b);
-    return (a * b) / gcdValue;
 };
