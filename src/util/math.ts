@@ -7,7 +7,10 @@ export const gcd = (a: number, b: number): number => {
     return a;
 };
 
-export const lcm = (a: number, b: number): number => {
+const _lcm = (a: number, b: number): number => {
     const gcdValue = gcd(a, b);
     return (a * b) / gcdValue;
 };
+
+export const lcm = (...numbers: number[]): number =>
+    numbers.reduce((acc, cur) => _lcm(acc, cur), 1);

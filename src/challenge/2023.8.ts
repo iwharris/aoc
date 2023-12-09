@@ -56,11 +56,7 @@ export class Solution extends BaseSolution {
                 return stepCount;
             });
 
-        // console.log(allSteps);
-
-        const result = allSteps.reduce((mul, cur) => lcm(mul, cur), 1);
-
-        return result.toString();
+        return lcm(...allSteps).toString();
 
         // return stepCount.toString();
     }
