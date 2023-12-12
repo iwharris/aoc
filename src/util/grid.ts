@@ -51,6 +51,10 @@ export class Grid<V = any> {
         return [x, y];
     }
 
+    public indexOf(value: V, fromIndex?: number): number | null {
+        return this.grid.indexOf(value, fromIndex);
+    }
+
     public *rectPointGenerator(
         x: number,
         y: number,
@@ -298,6 +302,9 @@ export const translatePoint = (p: Point, distance: Vector2D): Point => {
 /** Returns true if two Points are adjacent diagonally or in the four cardinal directions */
 export const isAdjacent = (p0: Point, p1: Point): boolean =>
     Math.abs(p0[0] - p1[0]) <= 1 && Math.abs(p0[1] - p1[1]) <= 1;
+
+/** Checks that two Points are identical coordinates */
+export const isEqual = (p0: Point, p1: Point): boolean => p0[0] === p1[0] && p0[1] === p1[1];
 
 /** Mutates a Point, rotating it clockwise 90 degrees around an optional origin. Returns the same Point. */
 export const rotatePointClockwise = (p: Point): Point => {
