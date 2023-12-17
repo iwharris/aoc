@@ -172,11 +172,44 @@ export class Grid<V = any> {
         }
     }
 
-    public *pointGenerator(): Generator<Point, void, void> {
-        for (let y = 0; y < this.height; y++) {
-            for (let x = 0; x < this.width; x++) {
-                yield [x, y] as Point;
-            }
+    /**
+     * @param options.direction The direction to iterate in (defaults to iterating from the top)
+     */
+    public *pointGenerator(options?: {
+        direction: 'down' | 'left' | 'right' | 'up';
+    }): Generator<Point, void, void> {
+        const direction = options?.direction ?? 'down';
+        switch (direction) {
+            case 'down':
+                for (let y = 0; y < this.height; y++) {
+                    for (let x = 0; x < this.width; x++) {
+                        yield [x, y] as Point;
+                    }
+                }
+                break;
+            case 'up':
+                for (let y = this.height - 1; y >= 0; y--) {
+                    for (let x = 0; x < this.width; x++) {
+                        yield [x, y] as Point;
+                    }
+                }
+                break;
+            case 'right':
+                for (let x = 0; x < this.width; x++) {
+                    for (let y = 0; y < this.height; y++) {
+                        yield [x, y] as Point;
+                    }
+                }
+                break;
+            case 'left':
+                for (let x = this.width - 1; x >= 0; x--) {
+                    for (let y = 0; y < this.height; y++) {
+                        yield [x, y] as Point;
+                    }
+                }
+                break;
+            default:
+                throw new Error(`Unexpected direction ${direction}`);
         }
     }
 
