@@ -8,6 +8,14 @@ export type Vector2D = Point;
 export type Vector3D = Point3D;
 export type VectorN = PointN;
 
+export type CardinalDirection = 'N' | 'E' | 'W' | 'S';
+export const CARDINAL_VECTORS: Record<CardinalDirection, Vector2D> = {
+    N: [0, -1],
+    E: [1, 0],
+    W: [-1, 0],
+    S: [0, 1],
+};
+
 /**
  * A basic data structure that represents a 2-dimensional grid of "cells". The grid offers some common FP methods
  * (map/reduce) over its elements.
