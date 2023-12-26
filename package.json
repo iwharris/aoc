@@ -9,7 +9,7 @@
     },
     "scripts": {
         "aoc": "node dist/src/index.js",
-        "dev": "ts-node src/index.ts",
+        "dev": "ts-node --logError src/index.ts",
         "build": "npm run -s lint && npm run -s compile",
         "compile": "tsc",
         "compile:watch": "tsc -w",
