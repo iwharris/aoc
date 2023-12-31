@@ -349,16 +349,18 @@ export const manhattanDistance = ([x1, y1]: Point, [x2, y2]: Point): number => {
     return Math.abs(x1 - x2) + Math.abs(y1 - y2);
 };
 
+export const copyPoint = (p: Point): Point => [p[0], p[1]];
+
 /** Mutates a Point, moving it by some x,y offset. Returns the same Point. */
-export const translatePoint = (p: Point, distance: Vector2D): Point => {
-    p[0] += distance[0];
-    p[1] += distance[1];
+export const translatePoint = (p: Point, distance: Vector2D, magnitude = 1): Point => {
+    p[0] += distance[0] * magnitude;
+    p[1] += distance[1] * magnitude;
     return p;
 };
 
 /** Similar to translatePoint but returns a new Point */
-export const addPoints = (p: Point, distance: Vector2D): Point => {
-    return [p[0] + distance[0], p[1] + distance[1]];
+export const addPoints = (p: Point, distance: Vector2D, magnitude = 1): Point => {
+    return translatePoint(copyPoint(p), distance, magnitude);
 };
 
 /** Returns true if two Points are adjacent diagonally or in the four cardinal directions */
