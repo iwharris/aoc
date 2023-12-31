@@ -16,6 +16,22 @@ export const CARDINAL_VECTORS: Record<CardinalDirection, Vector2D> = {
     S: [0, 1],
 };
 
+// Ordered array of directions, used to calculate rotations
+const DIRECTION_ROTATIONS: readonly CardinalDirection[] = ['N', 'E', 'S', 'W'];
+
+export const rotateDirection = (
+    dir: CardinalDirection,
+    rotation: 'CW' | 'CCW'
+): CardinalDirection =>
+    DIRECTION_ROTATIONS[
+        (DIRECTION_ROTATIONS.indexOf(dir) +
+            DIRECTION_ROTATIONS.length +
+            (rotation === 'CW' ? 1 : -1)) %
+            DIRECTION_ROTATIONS.length
+    ];
+
+export const isPointEqual = (a: Point, b: Point) => a[0] === b[0] && a[1] === b[1];
+
 /**
  * A basic data structure that represents a 2-dimensional grid of "cells". The grid offers some common FP methods
  * (map/reduce) over its elements.
@@ -338,6 +354,11 @@ export const translatePoint = (p: Point, distance: Vector2D): Point => {
     p[0] += distance[0];
     p[1] += distance[1];
     return p;
+};
+
+/** Similar to translatePoint but returns a new Point */
+export const addPoints = (p: Point, distance: Vector2D): Point => {
+    return [p[0] + distance[0], p[1] + distance[1]];
 };
 
 /** Returns true if two Points are adjacent diagonally or in the four cardinal directions */
