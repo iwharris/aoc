@@ -1,6 +1,6 @@
 import { BaseSolution } from '../solution';
 import { Input } from '../types';
-import { sum } from '../util/fp';
+import { product, sum } from '../util/fp';
 
 export class Solution extends BaseSolution {
     preserveEmptyLines = true;
@@ -17,18 +17,8 @@ export class Solution extends BaseSolution {
 
     public solvePart2(lines: Input): string {
         const [workflowMap] = parseInput(lines);
-        let counter = 0;
-        for (let x = 1; x <= 4000; x++) {
-            for (let m = 1; m <= 4000; m++) {
-                console.log(`x=${x} m=${m}`);
-                for (let a = 1; a <= 4000; a++) {
-                    for (let s = 1; s <= 4000; s++) {
-                        if (getOutcome({ x, m, a, s }, workflowMap)) counter += 1;
-                    }
-                }
-            }
-        }
-        return counter.toString();
+
+        return solvePart2(workflowMap).toString();
     }
 }
 
@@ -49,6 +39,11 @@ type Rule = {
     value: number;
     next: string;
 };
+
+/** Upper and lower bounds for each property (inclusive) */
+type Range = Record<PartKey, [number, number]>;
+
+const duplicateRange = (range: Range) => JSON.parse(JSON.stringify(range));
 
 const getScore = (part: Part) => sum(Object.values(part));
 
@@ -89,7 +84,7 @@ const parseInput = (lines: Input): [WorkflowMap, Part[]] => {
         const ruleComponents = ruleStr.split(',');
         const next = ruleComponents[ruleComponents.length - 1];
 
-        const rules: Rule[] = ruleComponents.slice(0, -1).map((component, i, arr) => {
+        const rules: Rule[] = ruleComponents.slice(0, -1).map((component) => {
             // eg. a<2006:qkq
             const [valueStr, next] = component.slice(2).split(':');
             return {
@@ -118,4 +113,61 @@ const parseInput = (lines: Input): [WorkflowMap, Part[]] => {
 
     // console.log(JSON.stringify(workflowMap, null, 2));
     return [workflowMap, parts];
+};
+
+const getAcceptedRangesForWorkflow = (
+    workflowMap: WorkflowMap,
+    id: string,
+    range: Range
+): Range[] => {
+    if (id === 'R') return [];
+    else if (id === 'A') return [duplicateRange(range)];
+
+    const workflow = workflowMap[id];
+
+    const newRanges: Range[] = [];
+
+    workflow.rules.forEach((rule) => {
+        if (rule.operator === '<') {
+            const newRange = duplicateRange(range);
+            newRange[rule.operand][1] = rule.value - 1; // clamp the max down to 1 less than the rule value
+            newRanges.push(...getAcceptedRangesForWorkflow(workflowMap, rule.next, newRange));
+            range[rule.operand][0] = rule.value;
+        }
+
+        if (rule.operator === '>') {
+            const newRange = duplicateRange(range);
+            newRange[rule.operand][0] = rule.value + 1; // clamp the min to 1 greater than the rule value
+            newRanges.push(...getAcceptedRangesForWorkflow(workflowMap, rule.next, newRange));
+            range[rule.operand][1] = rule.value;
+        }
+    });
+
+    // handle last rule
+    newRanges.push(
+        ...getAcceptedRangesForWorkflow(workflowMap, workflow.next, duplicateRange(range))
+    );
+
+    return newRanges;
+};
+
+const solvePart2 = (workflowMap: WorkflowMap): number => {
+    const initialRange: Range = {
+        x: [1, 4000],
+        m: [1, 4000],
+        a: [1, 4000],
+        s: [1, 4000],
+    };
+
+    const ranges = getAcceptedRangesForWorkflow(workflowMap, 'in', initialRange);
+
+    // return sum(
+    //     ranges.map((range) => product(Object.values(range).map(([min, max]) => max - min + 1)))
+    // );
+
+    // console.log(ranges);
+
+    return ranges
+        .map((range) => Object.values(range).reduce((acc, [min, max]) => acc * (max - min + 1), 1))
+        .reduce((acc: number, v: number) => acc + v, 0);
 };
