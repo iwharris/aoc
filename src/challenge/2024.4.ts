@@ -1,6 +1,7 @@
 import { BaseSolution } from '../solution';
 import { Input } from '../types';
-import { CARDINAL_VECTORS, Grid, Point, translatePoint } from '../util/grid';
+import { CARDINAL_VECTORS, Grid, Point } from '../util/grid';
+import { takeArray } from '../util/iter';
 
 export class Solution extends BaseSolution {
     description = ``;
@@ -14,10 +15,14 @@ export class Solution extends BaseSolution {
 
         // visit every point and search in all eight cardinal directions
         for (const originPoint of grid.pointGenerator()) {
+            if (grid.getValue(originPoint) !== 'X') {
+                continue;
+            }
+
             occurrences += Object.entries(CARDINAL_VECTORS)
-                .map(([direction, slope]) => {
-                    const str = [...grid.linePointGenerator(slope, originPoint)]
-                        .slice(0, 4)
+                .map(([, slope]) => {
+                    const str = takeArray(grid.linePointGenerator(slope, originPoint), 4)
+                        .filter(Boolean)
                         .map((point) => grid.getValue(point))
                         .join('');
 
@@ -39,18 +44,24 @@ export class Solution extends BaseSolution {
 
         // visit every point and search in an X pattern
         for (const originPoint of grid.pointGenerator()) {
-            // get three chars starting from NW and going SE
+            if (grid.getValue(originPoint) !== 'A') {
+                continue;
+            }
+
+            // get three chars starting from NW and going SE. If both strings match MAS or SAM, it's an X
 
             const [x, y] = originPoint;
             const nw: Point = [x - 1, y - 1];
             const ne: Point = [x + 1, y - 1];
 
-            const str1 = [...grid.linePointGenerator(CARDINAL_VECTORS.SE, nw)]
+            const str1 = takeArray(grid.linePointGenerator(CARDINAL_VECTORS.SE, nw), 3)
+                .filter(Boolean)
                 .slice(0, 3)
                 .map((p) => grid.getValue(p))
                 .join('');
 
-            const str2 = [...grid.linePointGenerator(CARDINAL_VECTORS.SW, ne)]
+            const str2 = takeArray(grid.linePointGenerator(CARDINAL_VECTORS.SW, ne), 3)
+                .filter(Boolean)
                 .slice(0, 3)
                 .map((p) => grid.getValue(p))
                 .join('');
