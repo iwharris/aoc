@@ -8,12 +8,16 @@ export type Vector2D = Point;
 export type Vector3D = Point3D;
 export type VectorN = PointN;
 
-export type CardinalDirection = 'N' | 'E' | 'W' | 'S';
+export type CardinalDirection = 'N' | 'E' | 'W' | 'S' | 'NW' | 'NE' | 'SE' | 'SW';
 export const CARDINAL_VECTORS: Record<CardinalDirection, Vector2D> = {
     N: [0, -1],
     E: [1, 0],
     W: [-1, 0],
     S: [0, 1],
+    NW: [-1, -1],
+    NE: [1, -1],
+    SE: [1, 1],
+    SW: [-1, 1],
 };
 
 // Ordered array of directions, used to calculate rotations
