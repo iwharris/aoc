@@ -1,126 +1,71 @@
+import assert from 'assert';
 import { BaseSolution } from '../solution';
 import { Input } from '../types';
 import { sum } from '../util/fp';
 
-type Operator = '*' | '+' | '|';
+const solve = (lines: Input, isPart2 = false): string => {
+    const isValid = (target: number, values: number[]) => {
+        assert(values.length >= 2);
 
-const OPERATION: Record<Operator, (a: number, b: number) => number> = {
-    '*': (a, b) => a * b,
-    '+': (a, b) => a + b,
-    '|': (a, b) => parseInt(`${a}${b}`), // concat
+        // Base case, figure out if two values can equal the target
+        if (values.length === 2) {
+            const [a, b] = values;
+            return (
+                target === a + b || target === a * b || (isPart2 && target === parseInt(`${a}${b}`))
+            );
+        }
+
+        const [val] = values.slice(-1);
+        const rest = values.slice(0, -1);
+
+        // work backwards via subtraction. If subtraction results in negative number, it can't possibly be valid so short circuit
+        if (target - val > 0 && isValid(target - val, rest)) {
+            return true;
+        }
+
+        // if number doesn't divide evenly then it can't be correct, so short circuit
+        if (Number.isInteger(target / val) && isValid(target / val, rest)) {
+            return true;
+        }
+
+        // concat case: if target string endsWith the value, concat is possible - otherwise, short circuit
+        if (
+            isPart2 &&
+            target.toString().endsWith(val.toString()) &&
+            isValid(parseInt(target.toString().slice(0, -val.toString().length)), rest)
+        ) {
+            return true;
+        }
+
+        return false;
+    };
+
+    return sum(
+        lines
+            .map((line) => {
+                // Parse
+                const [targetStr, testValuesStr] = line.split(':');
+                const target = parseInt(targetStr);
+                const testValues = testValuesStr
+                    .split(' ')
+                    .filter(Boolean)
+                    .map((token) => parseInt(token));
+
+                return { target, testValues };
+            })
+            .filter(({ target, testValues }) => isValid(target, testValues))
+            .map(({ target }) => target)
+    ).toString();
 };
-
-const matchesTarget = (testValues: TestValues, target: number): boolean => {
-    let acc = 0;
-    let operand: number;
-    let operator: Operator;
-
-    for (let i = 0; i < testValues.length; i += 2) {
-        operator = testValues[i] as Operator;
-        operand = testValues[i + 1] as number;
-
-        acc = OPERATION[operator](acc, operand);
-    }
-
-    if (acc === target) {
-        // console.log(`${testValues.join(' ')} equals ${target}`);
-    }
-
-    return acc === target;
-};
-
-const permute = (arr: TestValues, remaining: TestValues): TestValues[] => {
-    if (remaining.length === 1) {
-        return [[...arr, remaining[0]]];
-    }
-
-    const [cur, ...rest] = remaining;
-
-    return [
-        // add
-        permute([...arr, cur, '+'], rest),
-        // mult
-        permute([...arr, cur, '*'], rest),
-    ].flat();
-};
-
-const permute2 = (arr: TestValues, remaining: TestValues): TestValues[] => {
-    if (remaining.length === 1) {
-        return [[...arr, remaining[0]]];
-    }
-
-    const [cur, ...rest] = remaining;
-
-    return [
-        // add
-        permute2([...arr, cur, '+'], rest),
-        // mult
-        permute2([...arr, cur, '*'], rest),
-        // concat
-        permute2([...arr, cur, '|'], rest),
-    ].flat();
-};
-
-type TestValues = Array<number | Operator>;
 
 export class Solution extends BaseSolution {
     description = ``;
 
     public solvePart1(lines: Input): string {
-        return sum(
-            lines
-                // .slice(0, 2)
-                .map((line) => {
-                    // Parse
-                    const [targetStr, testValuesStr] = line.split(':');
-                    const target = parseInt(targetStr);
-                    const testValues = testValuesStr
-                        .split(' ')
-                        .filter(Boolean)
-                        .map((token) => parseInt(token));
-
-                    return { target, testValues };
-                })
-                .map(({ target, testValues }) => {
-                    // Generate test values with permutations of operators
-                    const operations = permute(['+'], testValues);
-                    const match = operations.some((op) => matchesTarget(op, target));
-
-                    return { target, testValues, match };
-                })
-                .filter(({ match }) => !!match)
-                .map(({ target }) => target)
-        ).toString();
-        // .forEach((val) => {
-        //     console.log(val);
-        // });
+        return solve(lines);
     }
 
     public solvePart2(lines: Input): string {
-        return sum(
-            lines
-                // .slice(4, 5)
-                .map((line) => {
-                    // Parse
-                    const [targetStr, testValuesStr] = line.split(':');
-                    const target = parseInt(targetStr);
-                    const testValues = testValuesStr
-                        .split(' ')
-                        .filter(Boolean)
-                        .map((token) => parseInt(token));
-
-                    return { target, testValues };
-                })
-                .map(({ target, testValues }) => {
-                    // Generate test values with permutations of operators
-                    const operations = permute2(['+'], testValues);
-                    // console.log(operations);
-                    const match = operations.some((op) => matchesTarget(op, target));
-
-                    return { target, testValues, match };
-                })
-                .filter(({ match }) => !!match)
-                .map(({ target }) => target)
-        ).toString();
+        return solve(lines, true);
     }
 }
