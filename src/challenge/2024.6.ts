@@ -4,66 +4,88 @@ import {
     CARDINAL_VECTORS,
     CardinalDirection,
     Grid,
-    isPointEqual,
     Point,
     rotateDirection,
     translatePoint,
 } from '../util/grid';
 
+type GuardGrid = Grid<Tile>;
 type Tile = '#' | '.';
+
+const simulateVisitedCells = (
+    grid: GuardGrid,
+    initialGuardPosition: Point,
+    initialGuardDirection: CardinalDirection
+): Set<string> => {
+    let pos = initialGuardPosition;
+    let dir = initialGuardDirection;
+    const visited = new Set<string>();
+    const visit = (pt: Point) => visited.add(pt.join(','));
+
+    visit(pos);
+
+    while (grid.isInBounds(pos)) {
+        const newPos = translatePoint([...pos], CARDINAL_VECTORS[dir], 1);
+        if (grid.isInBounds(newPos)) {
+            if (grid.getValue(newPos) === '.') {
+                // can move
+                visit(newPos);
+                pos = newPos;
+            } else if (grid.getValue(newPos) === '#') {
+                // hit wall, rotate 90 degrees right
+                dir = rotateDirection(dir, 'CW');
+                // console.log(`hit wall at ${newPosition}!`, pos, guardDirection);
+            }
+        } else {
+            break;
+        }
+    }
+
+    return visited;
+};
+
+const parseGrid = (lines: Input): [GuardGrid, Point] => {
+    let guardPos: Point | undefined;
+
+    const grid = Grid.loadFromStrings<Tile>(lines, (char, pt) => {
+        if (char === '^') {
+            guardPos = pt;
+            return '.';
+        } else if (char === '#' || char === '.') {
+            return char;
+        } else {
+            throw new Error(char);
+        }
+    });
+
+    if (!guardPos) throw new Error();
+
+    return [grid, guardPos];
+};
 
 export class Solution extends BaseSolution {
     description = ``;
 
     public solvePart1(lines: Input): string {
-        let guardPosition: Point = [0, 0];
-        let guardDirection: CardinalDirection = 'N';
+        const [grid, guardPosition] = parseGrid(lines);
+        const guardDirection: CardinalDirection = 'N';
 
-        const visitedCells = new Set<string>();
-        const visit = (pt: Point) => {
-            // console.log(`visited ${pt}`);
-            visitedCells.add(pt.join(','));
-        };
-
-        const grid = Grid.loadFromStrings<Tile>(lines, (char, pt) => {
-            if (char === '^') {
-                guardPosition = pt;
-                visit(pt);
-                return '.';
-            } else if (char === '#' || char === '.') {
-                return char;
-            } else {
-                throw new Error(char);
-            }
-        });
-
-        while (grid.isInBounds(guardPosition)) {
-            const newPosition = translatePoint(
-                [...guardPosition],
-                CARDINAL_VECTORS[guardDirection],
-                1
-            );
-            if (grid.isInBounds(newPosition)) {
-                if (grid.getValue(newPosition) === '.') {
-                    // can move
-                    visit(newPosition);
-                    guardPosition = newPosition;
-                } else if (grid.getValue(newPosition) === '#') {
-                    // hit wall, rotate 90 degrees right
-                    guardDirection = rotateDirection(guardDirection, 'CW');
-                    // console.log(`hit wall at ${newPosition}!`, guardPosition, guardDirection);
-                }
-            } else {
-                break;
-            }
-        }
-
-        return visitedCells.size.toString();
+        const visited = simulateVisitedCells(grid, guardPosition, guardDirection);
+        return visited.size.toString();
     }
 
     public solvePart2(lines: Input): string {
-        let initialGuardPosition: Point = [0, 0];
+        const [grid, initialGuardPosition] = parseGrid(lines);
         const initialGuardDirection: CardinalDirection = 'N';
+
+        const initialVisited = simulateVisitedCells(
+            grid,
+            initialGuardPosition,
+            initialGuardDirection
+        );
+
+        // initialVisited now contains all the points where we can place an obstacle
+        initialVisited.delete(initialGuardPosition.join(','));
 
         const visit = (set: Set<string>, pt: Point, dir: CardinalDirection): boolean => {
             // console.log(`visited ${pt}`);
@@ -78,79 +100,59 @@ export class Solution extends BaseSolution {
             }
         };
 
-        const initialGrid = Grid.loadFromStrings<Tile>(lines, (char, pt) => {
-            if (char === '^') {
-                initialGuardPosition = pt;
-                // visit(pt, initialGuardPosition);
-                return '.';
-            } else if (char === '#' || char === '.') {
-                return char;
-            } else {
-                throw new Error(char);
-            }
-        });
-
-        // try all possibilities
-
         let loops = 0;
 
-        for (const obstaclePoint of initialGrid.pointGenerator()) {
-            // Don't consider points that already have walls or are the initial guard position
-            if (
-                initialGrid.getValue(obstaclePoint) === '.' &&
-                !isPointEqual(initialGuardPosition, obstaclePoint)
-            ) {
-                // set up a new Grid
-                const thisGrid = Grid.loadFromStrings<Tile>(lines, (char) =>
-                    char === '^' ? '.' : (char as Tile)
-                );
+        for (const obstaclePoint of [...initialVisited.values()].map((s) =>
+            s.split(',').map((num) => parseInt(num))
+        )) {
+            // populate an obstacle
+            grid.set(obstaclePoint as Point, '#');
 
-                // populate an obstacle
-                thisGrid.set(obstaclePoint, '#');
+            let pos: Point = [...initialGuardPosition];
+            let dir: CardinalDirection = initialGuardDirection;
+            const set = new Set<string>();
 
-                let pos: Point = [...initialGuardPosition];
-                let dir: CardinalDirection = initialGuardDirection;
-                const set = new Set<string>();
+            // console.log('setting obstacle at ', obstaclePoint);
 
-                // console.log('setting obstacle at ', obstaclePoint);
-
-                while (thisGrid.isInBounds(pos)) {
-                    // console.log('here', pos, dir);
-                    const newPosition = translatePoint([...pos], CARDINAL_VECTORS[dir], 1);
-                    if (thisGrid.isInBounds(newPosition)) {
-                        if (thisGrid.getValue(newPosition) === '.') {
-                            // can move
-                            const foundLoop = visit(set, newPosition, dir);
-                            pos = newPosition;
-                            if (foundLoop) {
-                                // console.log(
-                                //     'found loop while moving forward at ',
-                                //     newPosition,
-                                //     dir,
-                                //     set
-                                // );
-                                loops += 1;
-                                break;
-                            }
-                        } else if (thisGrid.getValue(newPosition) === '#') {
-                            // hit wall, rotate 90 degrees right
-                            dir = rotateDirection(dir, 'CW');
-                            const foundLoop = visit(set, pos, dir);
-                            if (foundLoop) {
-                                // console.log('found loop while rotating at ', newPosition, dir, set);
-                                loops += 1;
-                                break;
-                            }
-                            // console.log(`hit wall at ${newPosition}!`, pos, dir);
+            while (grid.isInBounds(pos)) {
+                // console.log('here', pos, dir);
+                const newPosition = translatePoint([...pos], CARDINAL_VECTORS[dir], 1);
+                if (grid.isInBounds(newPosition)) {
+                    if (grid.getValue(newPosition) === '.') {
+                        // can move
+                        const foundLoop = visit(set, newPosition, dir);
+                        pos = newPosition;
+                        if (foundLoop) {
+                            // console.log(
+                            //     'found loop while moving forward at ',
+                            //     newPosition,
+                            //     dir,
+                            //     set
+                            // );
+                            loops += 1;
+                            break;
                         }
-                    } else {
-                        // console.log('ran off edge at', pos, dir);
-                        break;
+                    } else if (grid.getValue(newPosition) === '#') {
+                        // hit wall, rotate 90 degrees right
+                        dir = rotateDirection(dir, 'CW');
+                        const foundLoop = visit(set, pos, dir);
+                        if (foundLoop) {
+                            // console.log('found loop while rotating at ', newPosition, dir, set);
+                            loops += 1;
+                            break;
+                        }
+                        // console.log(`hit wall at ${newPosition}!`, pos, dir);
                     }
+                } else {
+                    // console.log('ran off edge at', pos, dir);
+                    break;
                 }
-
-                // console.log('finished');
             }
+
+            // Clean up obstacle
+            grid.set(obstaclePoint as Point, '.');
+
+            // console.log('finished');
         }
 
         return loops.toString();
