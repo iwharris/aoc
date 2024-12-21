@@ -18,8 +18,8 @@ Run the CLI, skipping compilation:
 # See usage instructions for the CLI
 npm run dev
 
-# To solve a challenge with an input file
-npm run dev solve 2022.1 < input/2022.1.txt
+# To solve a challenge with an input file during dev
+npm run solve 2022.1 < input/2022.1.txt
 ```
 
 Run the CLI by compiling and then executing the compiled JS:
