@@ -170,3 +170,125 @@ export class DeprecatedHeapPriorityQueue<T = any> implements PriorityQueue<T> {
         }
     }
 }
+
+/**
+ * Generic Priority Queue implementation using a binary heap.
+ * Pass a comparator in order to customize the ordering (eg. change this to a minheap or maxheap)
+ */
+export class BinaryHeapPriorityQueue<T> implements PriorityQueue<T> {
+    // Internal array storing items
+    private heap: T[] = [];
+    private compare: Comparator<T>;
+
+    /**
+     * Creates a new priority queue.
+     * @param comparator Optional function to determine priority.
+     * Defaults to using < operator for numbers and string comparison for strings.
+     */
+    constructor(comparator?: Comparator<T>) {
+        this.compare = comparator ?? (defaultComparator as Comparator<T>);
+    }
+
+    /**
+     * Adds a new item to the queue.
+     */
+    public push(item: T): void {
+        this.heap.push(item);
+        this.siftUp(this.heap.length - 1);
+    }
+
+    /**
+     * Removes and returns the highest priority item.
+     * Returns null if queue is empty.
+     */
+    public pop(): T | null {
+        if (this.heap.length === 0) return null;
+
+        const result = this.heap[0];
+        const last = this.heap.pop();
+
+        if (!last) throw new Error('Ex');
+
+        if (this.heap.length > 0) {
+            this.heap[0] = last;
+            this.siftDown(0);
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the highest priority item without removing it.
+     * Returns null if queue is empty.
+     */
+    public peek(): T | null {
+        return this.heap[0] ?? null;
+    }
+
+    /**
+     * Returns the current number of items in the queue.
+     */
+    public get size(): number {
+        return this.heap.length;
+    }
+
+    /**
+     * Checks if the queue has no elements.
+     */
+    public isEmpty(): boolean {
+        return this.heap.length === 0;
+    }
+
+    /**
+     * Restores heap property by moving an element up the tree until it's in the correct position.
+     */
+    private siftUp(index: number): void {
+        while (index > 0) {
+            const parentIndex = Math.floor((index - 1) / 2);
+            if (this.compare(this.heap[parentIndex], this.heap[index]) <= 0) {
+                break;
+            }
+            this.swap(index, parentIndex);
+            index = parentIndex;
+        }
+    }
+
+    /**
+     * Restores heap property by moving an element down the tree until it's in the correct position.
+     */
+    private siftDown(index: number): void {
+        while (true) {
+            let minIndex = index;
+            const leftChild = 2 * index + 1;
+            const rightChild = 2 * index + 2;
+
+            if (
+                leftChild < this.heap.length &&
+                this.compare(this.heap[leftChild], this.heap[minIndex]) < 0
+            ) {
+                minIndex = leftChild;
+            }
+
+            if (
+                rightChild < this.heap.length &&
+                this.compare(this.heap[rightChild], this.heap[minIndex]) < 0
+            ) {
+                minIndex = rightChild;
+            }
+
+            if (minIndex === index) {
+                break;
+            }
+
+            this.swap(index, minIndex);
+            index = minIndex;
+        }
+    }
+
+    /**
+     * Swaps two elements in the heap array.
+     */
+    private swap(i: number, j: number): void {
+        [this.heap[i], this.heap[j]] = [this.heap[j], this.heap[i]];
+    }
+}
