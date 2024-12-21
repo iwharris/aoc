@@ -62,3 +62,8 @@ typings/
 
 dist
 .vscode
+
+# Disallow committing real inputs
+input/*
+# Allow example inputs
+!input/*.example
