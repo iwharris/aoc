@@ -1,16 +1,43 @@
-export interface PriorityQueue<T = any> {
-    push: (elem: T, priority: number) => void;
-    pop: () => T | null;
-    size: () => number;
-    peek?: () => T | null;
+/**
+ * Interface defining the contract for priority queue implementations.
+ */
+export interface PriorityQueue<T> {
+    push(item: T, priority: number): void;
+    pop(): T | null;
+    peek(): T | null;
+    size: number;
+    isEmpty(): boolean;
 }
+
+/**
+ * Type definition for the comparator function.
+ * Returns negative if a should come before b,
+ * positive if b should come before a,
+ * and 0 if they are equal.
+ */
+export type Comparator<T> = (a: T, b: T) => number;
+
+/**
+ * Default comparator for primitive types.
+ * Handles numbers and strings, throws error for other types.
+ */
+export const defaultComparator: Comparator<string | number> = (a, b) => {
+    if (typeof a === 'number' && typeof b === 'number') {
+        return a - b;
+    }
+    if (typeof a === 'string' && typeof b === 'string') {
+        return a.localeCompare(b);
+    }
+    throw new Error(
+        'Default comparator only works with numbers and strings. Please provide a custom comparator.'
+    );
+};
 
 type Node<T> = {
     priority: number;
     elem: T;
 };
-
-/** Simple array-based priority queue with O(n) enqueue, O(1) dequeue performance */
+/** Simple array-based priority queue with O(n) push, O(1) pop performance */
 export class SimplePriorityQueue<T = any> implements PriorityQueue<T> {
     private queue: Node<T>[] = [];
 
@@ -41,12 +68,14 @@ export class SimplePriorityQueue<T = any> implements PriorityQueue<T> {
         return this.queue[0]?.elem ?? null;
     }
 
-    size(): number {
+    get size(): number {
         return this.queue.length;
     }
-}
 
-type Comparator<T> = (valueA: T, valueB: T) => number;
+    isEmpty(): boolean {
+        return this.queue.length === 0;
+    }
+}
 
 const swap = (arr: unknown[], i: number, j: number) => {
     [arr[i], arr[j]] = [arr[j], arr[i]];
@@ -55,7 +84,7 @@ const swap = (arr: unknown[], i: number, j: number) => {
 /**
  * Better priority queue implementation with custom comparator.
  */
-export class HeapPriorityQueue<T = any> implements PriorityQueue<T> {
+export class DeprecatedHeapPriorityQueue<T = any> implements PriorityQueue<T> {
     // Example usage
     // const numberComparator: Comparator<number> = (numberA, numberB) => {
     //   return numberA - numberB;
@@ -80,7 +109,15 @@ export class HeapPriorityQueue<T = any> implements PriorityQueue<T> {
         this.isGreater = (a: number, b: number) => comparator(init[a] as T, init[b] as T) < 0;
     }
 
-    size(): number {
+    peek(): T | null {
+        return this.heap[0] ?? null;
+    }
+
+    isEmpty(): boolean {
+        return this.heap.length === 0;
+    }
+
+    get size(): number {
         return this.heap.length;
     }
 
@@ -89,7 +126,6 @@ export class HeapPriorityQueue<T = any> implements PriorityQueue<T> {
         this.siftUp();
     }
 
-    pop(): T | null;
     pop(heap = this.heap, value = heap[0], length = heap.length): T | null {
         if (length) {
             swap(heap, 0, length - 1);
@@ -102,7 +138,7 @@ export class HeapPriorityQueue<T = any> implements PriorityQueue<T> {
     }
 
     private siftUp(): void;
-    private siftUp(node = this.size() - 1, parent = ((node + 1) >>> 1) - 1): void {
+    private siftUp(node = this.size - 1, parent = ((node + 1) >>> 1) - 1): void {
         for (
             ;
             node && this.isGreater(node, parent);
@@ -113,7 +149,7 @@ export class HeapPriorityQueue<T = any> implements PriorityQueue<T> {
     }
 
     private siftDown(): void;
-    private siftDown(size = this.size(), node = 0, isGreater = this.isGreater): void {
+    private siftDown(size = this.size, node = 0, isGreater = this.isGreater): void {
         while (true) {
             const leftNode = (node << 1) + 1;
             const rightNode = leftNode + 1;

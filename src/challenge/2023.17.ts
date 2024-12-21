@@ -9,7 +9,7 @@ import {
     isPointEqual,
     rotateDirection,
 } from '../util/grid';
-import { HeapPriorityQueue } from '../util/struct/priority-queue';
+import { DeprecatedHeapPriorityQueue } from '../util/struct/priority-queue';
 
 export class Solution extends BaseSolution {
     description = ``;
@@ -32,7 +32,7 @@ type State = [number, Point, CardinalDirection, number];
 
 const solve = (g: Grid<number>, minSteps: number, maxSteps: number): number => {
     // dijkstra implementation
-    const queue = new HeapPriorityQueue<State>((a, b) => a[0] - b[0]);
+    const queue = new DeprecatedHeapPriorityQueue<State>((a, b) => a[0] - b[0]);
 
     const source: Point = [0, 0];
     const target: Point = [g.width - 1, g.height - 1];
@@ -42,7 +42,7 @@ const solve = (g: Grid<number>, minSteps: number, maxSteps: number): number => {
     queue.push([0, source, 'S', 0]);
     const seen = new Set<string>();
 
-    while (queue.size() > 0) {
+    while (queue.size > 0) {
         const item = queue.pop();
         if (!item) throw new Error();
         const [heat, point, direction, numSteps] = item;
