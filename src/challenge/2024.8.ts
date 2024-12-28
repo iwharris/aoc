@@ -1,6 +1,7 @@
 import { BaseSolution } from '../solution';
 import { Input } from '../types';
-import { Grid, Point, Vector2D } from '../util/grid';
+import { Grid } from '../util/grid';
+import { Point, Vector2DTuple } from '../util/point';
 
 const getAllPairs = (points: Point[]): [Point, Point][] => {
     const pairs: [Point, Point][] = [];
@@ -38,7 +39,7 @@ const plotAntinodes = (antinodeGrid: Grid<boolean>, nodes: NodeMap, isPart2: boo
         // console.log('processing antenna', nodeType);
 
         getAllPairs(nodes[nodeType]).forEach(([a, b]) => {
-            const slope: Vector2D = [a[0] - b[0], a[1] - b[1]];
+            const slope: Vector2DTuple = [a[0] - b[0], a[1] - b[1]];
 
             if (!isPart2) {
                 // add slope to a, subtract slope from b
@@ -63,7 +64,7 @@ const plotAntinodes = (antinodeGrid: Grid<boolean>, nodes: NodeMap, isPart2: boo
                 }
                 // and reverse the slope to project in the other direction from a
                 for (const pt of antinodeGrid.linePointGenerator(
-                    [-slope[0], -slope[1]] as Vector2D,
+                    [-slope[0], -slope[1]] as Vector2DTuple,
                     a
                 )) {
                     antinodeGrid.set(pt, true);

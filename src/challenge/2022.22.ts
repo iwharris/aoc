@@ -1,6 +1,6 @@
 import { BaseSolution } from '../solution';
 import { Input } from '../types';
-import { Point } from '../util/grid';
+import { Point } from '../util/point';
 
 export class Solution extends BaseSolution {
     description = `

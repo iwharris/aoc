@@ -1,6 +1,8 @@
 import { BaseSolution } from '../solution';
 import { Input } from '../types';
-import { CARDINAL_VECTORS, CardinalDirection, Grid, Point, translatePoint } from '../util/grid';
+import { CARDINAL_VECTORS, CardinalDirection, Grid } from '../util/grid';
+import { translatePoint } from '../util/point';
+import { Point } from '../util/point';
 
 export class Solution extends BaseSolution {
     description = ``;

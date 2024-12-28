@@ -1,11 +1,9 @@
 import { BaseSolution, Input } from '../solution';
-import {
-    manhattanDistance,
-    Point,
-    rotatePointClockwise,
-    rotatePointCounterclockwise,
-    translatePoint,
-} from '../util/grid';
+import { rotatePointCounterclockwise } from '../util/point';
+import { rotatePointClockwise } from '../util/point';
+import { translatePoint } from '../util/point';
+import { Point } from '../util/point';
+import { manhattanDistance } from '../util/point';
 
 export class Solution extends BaseSolution {
     public description = `

@@ -1,5 +1,6 @@
 import { BaseSolution, Input } from '../solution';
-import { Grid, Vector2D } from '../util/grid';
+import { Grid } from '../util/grid';
+import { Vector2DTuple } from '../util/point';
 
 export class Solution extends BaseSolution {
     public description = `
@@ -252,7 +253,7 @@ export class Solution extends BaseSolution {
             const visibilityGrid = grid.map<number>((seatValue, origin) => {
                 if (seatValue === Seat.EMPTY || seatValue === Seat.OCCUPIED) {
                     // compute visibility to occupied seats by looking in the eight cardinal directions
-                    const viewAngles: Vector2D[] = [
+                    const viewAngles: Vector2DTuple[] = [
                         [-1, -1], // northwest
                         [0, -1], // north
                         [1, -1], // northeast

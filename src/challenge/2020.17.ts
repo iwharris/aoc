@@ -1,5 +1,6 @@
 import { BaseSolution, Input } from '../solution';
-import { adjacencyGeneratorNDimension, PointN } from '../util/grid';
+import { adjacencyGeneratorNDimension } from '../util/point';
+import { PointNTuple } from '../util/point';
 
 export class Solution extends BaseSolution {
     public description = `
@@ -186,7 +187,7 @@ export class Solution extends BaseSolution {
 
 type Key = string;
 
-function* generatePointNPointFromInput(input: Input, dimensions: number): Generator<PointN> {
+function* generatePointNPointFromInput(input: Input, dimensions: number): Generator<PointNTuple> {
     for (let y = 0; y < input.length; y++) {
         const line = input[y];
         for (let x = 0; x < line.length; x++) {
@@ -212,20 +213,20 @@ class ConwayND {
         return this.cells.size;
     }
 
-    set(point: PointN): void {
+    set(point: PointNTuple): void {
         this.cells.add(this.key(point));
     }
 
-    remove(point: PointN): void {
+    remove(point: PointNTuple): void {
         this.cells.delete(this.key(point));
     }
 
-    key(point: PointN): Key {
+    key(point: PointNTuple): Key {
         return point.join(',');
     }
 
-    point(key: Key): PointN {
-        return key.split(',').map((v) => parseInt(v)) as unknown as PointN;
+    point(key: Key): PointNTuple {
+        return key.split(',').map((v) => parseInt(v)) as unknown as PointNTuple;
     }
 
     step(): void {

@@ -1,6 +1,4 @@
-import exp from 'constants';
-import { Point } from '../../src/util/grid';
-import { Point2D } from '../../src/util/point';
+import { Point2DTuple, Point2D } from '../../src/util/point';
 
 describe('Point2D', () => {
     describe('constructor', () => {
@@ -22,8 +20,16 @@ describe('Point2D', () => {
         });
 
         it('should instantiate from a tuple', () => {
-            const tuple: Point = [1, 2];
+            const tuple: Point2DTuple = [1, 2];
             const point = Point2D.fromTuple(tuple);
+
+            expect(point.x).toBe(1);
+            expect(point.y).toBe(2);
+        });
+
+        it('should instantiate from a string', () => {
+            const str = '1,2';
+            const point = Point2D.fromString(str);
 
             expect(point.x).toBe(1);
             expect(point.y).toBe(2);
@@ -38,10 +44,19 @@ describe('Point2D', () => {
             expect(point[1]).toBe(2);
         });
 
-        it('should allow destructuring', () => {
+        it('should allow array destructuring', () => {
             const point = new Point2D(1, 2);
 
             const [x, y] = point;
+
+            expect(x).toBe(1);
+            expect(y).toBe(2);
+        });
+
+        it('should allow object destructuring', () => {
+            const point = new Point2D(1, 2);
+
+            const { x, y } = point;
 
             expect(x).toBe(1);
             expect(y).toBe(2);

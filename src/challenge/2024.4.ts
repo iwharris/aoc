@@ -1,6 +1,7 @@
 import { BaseSolution } from '../solution';
 import { Input } from '../types';
-import { CARDINAL_VECTORS, Grid, Point } from '../util/grid';
+import { CARDINAL_VECTORS, Grid } from '../util/grid';
+import { Point } from '../util/point';
 import { takeArray } from '../util/iter';
 
 export class Solution extends BaseSolution {

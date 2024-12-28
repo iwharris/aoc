@@ -1,6 +1,8 @@
 import { BaseSolution } from '../solution';
 import { Input } from '../types';
-import { Grid, Vector2D, isEqual } from '../util/grid';
+import { Grid } from '../util/grid';
+import { isEqual } from '../util/point';
+import { Vector2DTuple } from '../util/point';
 
 export class Solution extends BaseSolution {
     preserveEmptyLines = true;
@@ -63,7 +65,7 @@ const TILT_TO_ITER_DIR: Record<TiltDirection, 'up' | 'down' | 'left' | 'right'> 
     S: 'up',
 };
 
-const DIR_TO_SLOPE: Record<TiltDirection, Vector2D> = {
+const DIR_TO_SLOPE: Record<TiltDirection, Vector2DTuple> = {
     W: [-1, 0],
     E: [1, 0],
     S: [0, 1],

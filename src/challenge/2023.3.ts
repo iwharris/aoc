@@ -1,7 +1,8 @@
 import { BaseSolution } from '../solution';
 import { Input } from '../types';
 import { product, sum } from '../util/fp';
-import { Grid, Vector2D } from '../util/grid';
+import { Grid } from '../util/grid';
+import { Vector2DTuple } from '../util/point';
 
 export class Solution extends BaseSolution {
     description = `
@@ -74,7 +75,7 @@ export class Solution extends BaseSolution {
 
         const grid = Grid.loadFromStrings<string>(lines);
 
-        const isPartNumber = (numStr: string, [xOrigin, yOrigin]: Vector2D): boolean => {
+        const isPartNumber = (numStr: string, [xOrigin, yOrigin]: Vector2DTuple): boolean => {
             for (let xOffset = 0; xOffset < numStr.length; xOffset += 1) {
                 // for each digit in the number, compute adjacent points and check for an adjacent symbol
 
@@ -148,7 +149,7 @@ export class Solution extends BaseSolution {
                     const num = parseInt(numStr);
 
                     numStr.split('').forEach((_digit, offset) => {
-                        const point: Vector2D = [xIndex + offset, yIndex];
+                        const point: Vector2DTuple = [xIndex + offset, yIndex];
                         if (
                             [...grid.adjacentPointGenerator(point)].some(
                                 (point) => grid.getValue(point) === '*'

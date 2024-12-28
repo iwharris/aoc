@@ -1,7 +1,7 @@
 import { BaseSolution } from '../solution';
 import { Input } from '../types';
 import { max } from '../util/fp';
-import { Point3D, Vector3D } from '../util/grid';
+import { Point3DTuple, Vector3DTuple } from '../util/point';
 
 export class Solution extends BaseSolution {
     description = `
@@ -71,11 +71,11 @@ class World {
 
     private state: CubicPointArray;
     /** Length of one side of the cube. Equal to the largest dimension of the droplet plus 2*PADDING */
-    private sideLength: Vector3D;
-    private points: Point3D[];
+    private sideLength: Vector3DTuple;
+    private points: Point3DTuple[];
 
-    constructor(points: Point3D[]) {
-        this.points = points.map((p) => p.map((v) => v + this.PADDING) as Point3D);
+    constructor(points: Point3DTuple[]) {
+        this.points = points.map((p) => p.map((v) => v + this.PADDING) as Point3DTuple);
         this.sideLength = this.getSideLength();
         this.state = this.initState();
     }
@@ -106,11 +106,11 @@ class World {
         return surfaces;
     }
 
-    private getState([x, y, z]: Point3D): Material {
+    private getState([x, y, z]: Point3DTuple): Material {
         return this.state[x][y][z];
     }
 
-    private floodState([x, y, z]: Point3D): void {
+    private floodState([x, y, z]: Point3DTuple): void {
         this.state[x][y][z] = WATER;
     }
 
@@ -145,7 +145,7 @@ class World {
         // }
     }
 
-    private isInBounds([x, y, z]: Point3D): boolean {
+    private isInBounds([x, y, z]: Point3DTuple): boolean {
         return (
             x >= 0 &&
             x < this.sideLength[0] &&
@@ -156,16 +156,16 @@ class World {
         );
     }
 
-    private isPointOccupied(p: Point3D): boolean {
+    private isPointOccupied(p: Point3DTuple): boolean {
         return !this.isInBounds(p) ? false : this.getState(p) !== AIR;
     }
 
-    private isPointOccupiedByWater(p: Point3D): boolean {
+    private isPointOccupiedByWater(p: Point3DTuple): boolean {
         return !this.isInBounds(p) ? true : this.getState(p) === WATER;
     }
 
     /** Generates six adjacent points (may be out of bounds) */
-    private *generateAdjacentPoints([x, y, z]: Point3D): Generator<Point3D> {
+    private *generateAdjacentPoints([x, y, z]: Point3DTuple): Generator<Point3DTuple> {
         yield [x - 1, y, z];
         yield [x + 1, y, z];
         yield [x, y - 1, z];
@@ -180,7 +180,7 @@ class World {
                 /(\d+),(\d+),(\d+)/gm
                     .exec(line)
                     ?.slice(1)
-                    .map((v) => parseInt(v)) as Point3D
+                    .map((v) => parseInt(v)) as Point3DTuple
         );
 
         return new World(points);
@@ -205,7 +205,7 @@ class World {
         return xArray;
     }
 
-    getSideLength(): Vector3D {
+    getSideLength(): Vector3DTuple {
         return this.points
             .reduce(
                 ([maxX, maxY, maxZ], [cx, cy, cz]) => [
@@ -215,7 +215,7 @@ class World {
                 ],
                 [-1, -1, -1]
             )
-            .map((v) => v + 1 + this.PADDING) as Vector3D;
+            .map((v) => v + 1 + this.PADDING) as Vector3DTuple;
     }
 
     public getAllSlices(): string[] {

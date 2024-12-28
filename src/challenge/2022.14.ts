@@ -1,6 +1,8 @@
 import { BaseSolution } from '../solution';
 import { Input } from '../types';
-import { Grid, Point, translatePoint, Vector2D } from '../util/grid';
+import { Grid } from '../util/grid';
+import { translatePoint } from '../util/point';
+import { Point, Vector2DTuple } from '../util/point';
 
 export class Solution extends BaseSolution {
     description = `
@@ -246,7 +248,7 @@ class SandSim {
         while (true) {
             // find the first transform that moves the sand to a non blocked point
             const nextPosition = Object.values(TRANSFORMS)
-                .map((transform) => translatePoint([...currentPosition], transform))
+                .map((transform) => translatePoint([...currentPosition] as Point, transform))
                 .find((candidatePoint) => {
                     if (!this.grid.isInBounds(candidatePoint)) {
                         throw new Error('Sand fell OOB');
@@ -289,7 +291,7 @@ class SandSim {
 }
 
 type FallDirection = 'down' | 'downLeft' | 'downRight';
-const TRANSFORMS: Record<FallDirection, Vector2D> = {
+const TRANSFORMS: Record<FallDirection, Vector2DTuple> = {
     down: [0, 1],
     downLeft: [-1, 1],
     downRight: [1, 1],

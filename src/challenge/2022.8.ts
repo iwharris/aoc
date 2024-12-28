@@ -1,7 +1,8 @@
 import { BaseSolution } from '../solution';
 import { Input } from '../types';
 import { product } from '../util/fp';
-import { Grid, Point, Vector2D } from '../util/grid';
+import { Grid } from '../util/grid';
+import { Point, Vector2DTuple } from '../util/point';
 
 export class Solution extends BaseSolution {
     description = `
@@ -112,7 +113,7 @@ export class Solution extends BaseSolution {
 
             // console.log('c', p);
             // Count how many cells you can visit before hitting the bounds of the grid or a tree that is too tall
-            const raycast = ([dx, dy]: Vector2D): number => {
+            const raycast = ([dx, dy]: Vector2DTuple): number => {
                 let cellsSeen = 0;
                 for (let y = py + dy; y >= 0 && y < treeGrid.height; y += dy || -Infinity) {
                     for (let x = px + dx; x >= 0 && x < treeGrid.width; x += dx || -Infinity) {
@@ -139,7 +140,7 @@ export class Solution extends BaseSolution {
     }
 }
 
-const DIRECTIONS: readonly Vector2D[] = [
+const DIRECTIONS: readonly Vector2DTuple[] = [
     [-1, 0],
     [1, 0],
     [0, -1],

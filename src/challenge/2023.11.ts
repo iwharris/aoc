@@ -1,7 +1,10 @@
 import { BaseSolution } from '../solution';
 import { Input } from '../types';
 import { sum } from '../util/fp';
-import { Grid, Point, manhattanDistance, translatePoint } from '../util/grid';
+import { Grid } from '../util/grid';
+import { translatePoint } from '../util/point';
+import { Point } from '../util/point';
+import { manhattanDistance } from '../util/point';
 
 export class Solution extends BaseSolution {
     description = `

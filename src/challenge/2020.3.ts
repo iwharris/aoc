@@ -1,5 +1,6 @@
 import { BaseSolution, Input } from '../solution';
-import { Grid, Point, Vector2D } from '../util/grid';
+import { Grid } from '../util/grid';
+import { Point, Vector2DTuple } from '../util/point';
 
 export class Solution extends BaseSolution {
     public description = `
@@ -72,14 +73,14 @@ export class Solution extends BaseSolution {
 
     solvePart1(lines: Input): string {
         const grid = parseGrid(lines);
-        const slope: Vector2D = [3, 1]; // right 3, down 1
+        const slope: Vector2DTuple = [3, 1]; // right 3, down 1
 
         return computeTreeEncountersForSlope(grid, slope).toString();
     }
 
     solvePart2(lines: Input): string {
         const grid = parseGrid(lines);
-        const slopes: Vector2D[] = [
+        const slopes: Vector2DTuple[] = [
             [1, 1],
             [3, 1],
             [5, 1],
@@ -109,7 +110,7 @@ const parseGrid = (lines: Input): Grid<boolean> => {
     return grid;
 };
 
-const computeTreeEncountersForSlope = (grid: Grid<boolean>, slope: Vector2D): number => {
+const computeTreeEncountersForSlope = (grid: Grid<boolean>, slope: Vector2DTuple): number => {
     const isDone = (y: number) => y >= grid.height;
     const translateCoords = ([x, y]: Point): Point => [x % grid.width, y];
     let x = 0;

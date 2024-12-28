@@ -1,6 +1,6 @@
 import { BaseSolution } from '../solution';
 import { Input } from '../types';
-import { Point, Vector2D } from '../util/grid';
+import { Point, Vector2DTuple } from '../util/point';
 
 export class Solution extends BaseSolution {
     description = `
@@ -360,7 +360,7 @@ const LEFT = '<';
 
 type Direction = typeof UP | typeof RIGHT | typeof DOWN | typeof LEFT;
 
-const DIRECTIONS: Record<Direction, Vector2D> = {
+const DIRECTIONS: Record<Direction, Vector2DTuple> = {
     [UP]: [0, -1],
     [RIGHT]: [1, 0],
     [DOWN]: [0, 1],
@@ -369,5 +369,5 @@ const DIRECTIONS: Record<Direction, Vector2D> = {
 
 type Blizzard = {
     position: Point;
-    direction: Vector2D;
+    direction: Vector2DTuple;
 };

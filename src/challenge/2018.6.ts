@@ -1,4 +1,5 @@
-import { Grid, Point } from '../util/grid';
+import { Grid } from '../util/grid';
+import { manhattanDistance, Point } from '../util/point';
 import { BaseSolution, Input } from '../solution';
 
 export class Solution extends BaseSolution {
@@ -151,10 +152,6 @@ function computeLargestPoints(coords: Point[]) {
     return coords.reduce(([mx, my], [x, y]) => [Math.max(mx, x), Math.max(my, y)], [0, 0]);
 }
 
-function computeManhattanDistance([x1, y1], [x2, y2]) {
-    return Math.abs(x1 - x2) + Math.abs(y1 - y2);
-}
-
 function populateCellDistancesToCoords(g: GridType, coords: Point[]): void {
     const grid = g;
     const gridPointGenerator = grid.rectPointGenerator(0, 0, grid.width, grid.height);
@@ -164,7 +161,7 @@ function populateCellDistancesToCoords(g: GridType, coords: Point[]): void {
         const point = gridPoint.value;
 
         const distances = coords
-            .map((coord, id) => ({ id, distance: computeManhattanDistance(point, coord) }))
+            .map((coord, id) => ({ id, distance: manhattanDistance(point, coord) }))
             .sort((p1, p2) => p1.distance - p2.distance);
 
         const shortestDistance = distances[0].distance;
@@ -193,7 +190,7 @@ function populateCellsWithinDistanceOfCoords(
         const point = gridPoint.value;
 
         const totalDistanceToAllCoords = coords
-            .map((coord) => computeManhattanDistance(point, coord)) // get distance to each coord
+            .map((coord) => manhattanDistance(point, coord)) // get distance to each coord
             .reduce((totalDistance, currentDistance) => totalDistance + currentDistance, 0); // sum distances
 
         if (totalDistanceToAllCoords < distanceThreshold) {

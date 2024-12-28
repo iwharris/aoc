@@ -4,11 +4,11 @@ import {
     CARDINAL_VECTORS,
     CardinalDirection,
     Grid,
-    Point,
-    addPoints,
     isPointEqual,
     rotateDirection,
 } from '../util/grid';
+import { addPoints } from '../util/point';
+import { Point } from '../util/point';
 import { DeprecatedHeapPriorityQueue } from '../util/struct/priority-queue';
 
 export class Solution extends BaseSolution {

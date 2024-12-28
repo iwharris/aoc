@@ -1,7 +1,8 @@
 import { assert } from 'console';
 import { BaseSolution } from '../solution';
 import { Input } from '../types';
-import { manhattanDistance, Point } from '../util/grid';
+import { Point } from '../util/point';
+import { manhattanDistance } from '../util/point';
 
 export class Solution extends BaseSolution {
     description = `

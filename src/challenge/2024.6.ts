@@ -1,13 +1,8 @@
 import { BaseSolution } from '../solution';
 import { Input } from '../types';
-import {
-    CARDINAL_VECTORS,
-    CardinalDirection,
-    Grid,
-    Point,
-    rotateDirection,
-    translatePoint,
-} from '../util/grid';
+import { CARDINAL_VECTORS, CardinalDirection, Grid, rotateDirection } from '../util/grid';
+import { translatePoint } from '../util/point';
+import { copyPoint, Point } from '../util/point';
 
 type GuardGrid = Grid<Tile>;
 type Tile = '#' | '.';
@@ -116,7 +111,7 @@ export class Solution extends BaseSolution {
 
             while (grid.isInBounds(pos)) {
                 // console.log('here', pos, dir);
-                const newPosition = translatePoint([...pos], CARDINAL_VECTORS[dir], 1);
+                const newPosition = translatePoint(copyPoint(pos), CARDINAL_VECTORS[dir], 1);
                 if (grid.isInBounds(newPosition)) {
                     if (grid.getValue(newPosition) === '.') {
                         // can move

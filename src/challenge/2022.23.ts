@@ -1,6 +1,6 @@
 import { BaseSolution } from '../solution';
 import { Input } from '../types';
-import { Point, Vector2D } from '../util/grid';
+import { Point, Vector2DTuple } from '../util/point';
 
 export class Solution extends BaseSolution {
     description = `
@@ -349,7 +349,7 @@ type Direction =
     | typeof W
     | typeof NW;
 
-const TRANSLATIONS: readonly Vector2D[] = [
+const TRANSLATIONS: readonly Vector2DTuple[] = [
     [0, -1],
     [1, -1],
     [1, 0],

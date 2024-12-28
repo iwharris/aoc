@@ -1,7 +1,8 @@
 import { BaseSolution } from '../solution';
 import { Input } from '../types';
 import { sum } from '../util/fp';
-import { Grid, Point } from '../util/grid';
+import { Grid } from '../util/grid';
+import { Point } from '../util/point';
 
 export class Solution extends BaseSolution {
     preserveEmptyLines = true;

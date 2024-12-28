@@ -1,7 +1,10 @@
 import { BaseSolution } from '../solution';
 import { Input } from '../types';
 import { max } from '../util/fp';
-import { Grid, Point, Vector2D, isEqual, translatePoint } from '../util/grid';
+import { Grid } from '../util/grid';
+import { isEqual } from '../util/point';
+import { translatePoint } from '../util/point';
+import { Point, Vector2DTuple } from '../util/point';
 
 export class Solution extends BaseSolution {
     description = `
@@ -194,7 +197,7 @@ export class Solution extends BaseSolution {
     }
 }
 
-const PIPES: Record<string, Vector2D[]> = {
+const PIPES: Record<string, Vector2DTuple[]> = {
     '|': [
         [0, -1],
         [0, 1],

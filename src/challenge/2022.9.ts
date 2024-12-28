@@ -1,6 +1,8 @@
 import { BaseSolution } from '../solution';
 import { Input } from '../types';
-import { isAdjacent, Point, translatePoint, Vector2D } from '../util/grid';
+import { isAdjacent } from '../util/point';
+import { translatePoint } from '../util/point';
+import { Point2DTuple as Point, Vector2DTuple } from '../util/point';
 
 export class Solution extends BaseSolution {
     description = `
@@ -745,7 +747,7 @@ const computeNewTailPosition = (headPos: Point, tailPos: Point): Point => {
         const [hx, hy] = headPos;
         const [tx, ty] = tailPos;
 
-        const transform: Vector2D = [0, 0];
+        const transform: Vector2DTuple = [0, 0];
 
         if (hx !== tx) {
             transform[0] = hx > tx ? 1 : -1;
@@ -760,7 +762,7 @@ const computeNewTailPosition = (headPos: Point, tailPos: Point): Point => {
 
 type CardinalDirection = 'R' | 'L' | 'U' | 'D';
 
-const DIRECTIONS: Record<CardinalDirection, Vector2D> = {
+const DIRECTIONS: Record<CardinalDirection, Vector2DTuple> = {
     L: [-1, 0],
     R: [1, 0],
     U: [0, -1],
