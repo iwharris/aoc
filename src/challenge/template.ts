@@ -1,5 +1,4 @@
-import { BaseSolution } from '../solution';
-import { Input } from '../types';
+import { BaseSolution, type Input } from '../solution';
 
 export class Solution extends BaseSolution {
     description = ``;

@@ -1,9 +1,8 @@
-export { Input } from './types';
-
 import { Input, Solution } from './types';
 import { getName } from './util/helper';
 import { parseInput } from './util/parser';
 
+export { Input } from './types';
 export abstract class BaseSolution implements Solution {
     public readonly description: string = '';
 
