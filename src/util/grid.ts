@@ -1,5 +1,6 @@
 import { assert } from 'console';
-import { Point, Vector2DTuple } from './point';
+import { Point, Point2D, PointLike, Vector2DTuple } from './point';
+import { StringifiedSet } from './set';
 
 export type CardinalDirection = 'N' | 'E' | 'W' | 'S' | 'NW' | 'NE' | 'SE' | 'SW';
 export const CARDINAL_VECTORS: Record<CardinalDirection, Vector2DTuple> = {
@@ -44,17 +45,17 @@ export class Grid<V = any> {
         this.grid = Array(this.width * this.height).fill(initialCellValue);
     }
 
-    public isInBounds([x, y]: Point): boolean {
+    public isInBounds([x, y]: PointLike): boolean {
         return x >= 0 && x < this.width && y >= 0 && y < this.height;
     }
 
-    public set(point: Point, value: V): void {
+    public set(point: PointLike, value: V): void {
         if (!this.isInBounds(point))
             throw new RangeError(`Tried to set value for out-of-bounds point [${point}]`);
         this.grid[this.getIndex(point)] = value;
     }
 
-    public getValue(point: Point): V {
+    public getValue(point: PointLike): V {
         if (!this.isInBounds(point))
             throw new RangeError(
                 `Tried to get value for out-of-bounds point [${point}]. Grid size is ${this.width}x${this.height}`
@@ -62,7 +63,7 @@ export class Grid<V = any> {
         return this.grid[this.getIndex(point)];
     }
 
-    public getIndex([x, y]: Point): number {
+    public getIndex([x, y]: PointLike): number {
         return y * this.width + x;
     }
 
@@ -114,14 +115,14 @@ export class Grid<V = any> {
      */
     public *linePointGenerator(
         slope: Vector2DTuple,
-        origin: Point = [0, 0],
+        origin: PointLike = [0, 0],
         options: { excludeOrigin: boolean } = { excludeOrigin: false }
     ): Generator<Point, void, void> {
         const [slopeX, slopeY] = slope;
 
         if (slopeX === 0 && slopeY === 0)
             throw new RangeError(`Can't generate a line with no slope`);
-        let [currentX, currentY]: Point = origin;
+        let [currentX, currentY] = origin;
 
         if (options.excludeOrigin) {
             currentX += slopeX;
@@ -136,7 +137,10 @@ export class Grid<V = any> {
     }
 
     /** Returns points along a vertical or horizontal line */
-    public *cardinalDirectionLineGenerator([x0, y0]: Point, [x1, y1]: Point): Generator<Point> {
+    public *cardinalDirectionLineGenerator(
+        [x0, y0]: PointLike,
+        [x1, y1]: PointLike
+    ): Generator<Point> {
         assert(
             x0 === x1 || y0 === y1,
             'Endpoints of cardinal line must have the same x or y value'
@@ -166,7 +170,7 @@ export class Grid<V = any> {
      * to change this.
      */
     public *adjacentPointGenerator(
-        origin: Point,
+        origin: PointLike,
         options: { includeOutOfBoundsPoints?: boolean; orthogonalOnly?: boolean } = {
             includeOutOfBoundsPoints: false,
             orthogonalOnly: false,
@@ -245,6 +249,53 @@ export class Grid<V = any> {
         assert(column >= 0 && column < this.height);
         for (let y = 0; y < this.height; y++) {
             yield [column, y];
+        }
+    }
+
+    /** Visits every point that is connected to the origin by a path of adjacent points with the same value. */
+    public *floodFillGenerator(
+        [originX, originY]: PointLike,
+        opts: { includeDiagonal?: boolean; isEqual?: (val1: V, val2: V) => boolean } = {
+            includeDiagonal: true,
+        }
+    ): Generator<Point2D> {
+        const visited = new StringifiedSet<Point2D>([], Point2D.fromString);
+        const queue: Point2D[] = [];
+
+        // Recursively visit all adjacent points with the same value and add them to the queue
+        const visit = (point: Point2D): void => {
+            if (!visited.has(point)) {
+                visited.add(point);
+                queue.push(point);
+
+                const thisVal = this.getValue(point);
+
+                for (const adjacentPoint of this.adjacentPointGenerator(point, {
+                    orthogonalOnly: !opts.includeDiagonal,
+                })) {
+                    const p2d = Point2D.fromTuple(adjacentPoint);
+                    if (!visited.has(p2d)) {
+                        // Haven't visited this one yet; look at value
+                        const adjacentValue = this.getValue(p2d);
+
+                        if (
+                            opts.isEqual
+                                ? opts.isEqual(thisVal, adjacentValue)
+                                : thisVal === adjacentValue
+                        ) {
+                            // If the value is the same, visit it
+                            visit(p2d);
+                        }
+                    }
+                }
+            }
+        };
+
+        // Start the flood fill
+        visit(new Point2D(originX, originY));
+
+        for (const p of queue) {
+            yield p;
         }
     }
 
