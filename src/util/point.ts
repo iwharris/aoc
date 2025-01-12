@@ -33,9 +33,25 @@ export class Point2D implements ArrayLike<number>, Iterable<number> {
         };
     }
 
+    get [0]() {
+        return this.x;
+    }
+
+    set [0](x: number) {
+        this.x = x;
+    }
+
+    get [1]() {
+        return this.y;
+    }
+
+    set [1](y: number) {
+        this.y = y;
+    }
+
     constructor(public x: number, public y: number) {
-        this[0] = x;
-        this[1] = y;
+        this.x = x;
+        this.y = y;
     }
 
     static fromTuple([x, y]: Point2DTuple): Point2D {
