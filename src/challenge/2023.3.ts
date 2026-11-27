@@ -99,7 +99,7 @@ export class Solution extends BaseSolution {
             return false;
         };
 
-        let accumulator: number = 0;
+        let accumulator = 0;
 
         lines
             // .slice(0, 1)
@@ -168,7 +168,7 @@ export class Solution extends BaseSolution {
 
         // console.log(pointToNumberId);
 
-        let accumulator: number = 0;
+        let accumulator = 0;
 
         grid.forEach((value, idx) => {
             if (value === '*') {
