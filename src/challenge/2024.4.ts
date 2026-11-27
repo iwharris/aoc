@@ -4,6 +4,9 @@ import { CARDINAL_VECTORS, Grid } from '../util/grid';
 import { Point } from '../util/point';
 import { takeArray } from '../util/iter';
 
+/** Drops the padding that takeArray adds when a line runs off the grid */
+const isDefined = <T>(value: T | undefined): value is T => value !== undefined;
+
 export class Solution extends BaseSolution {
     description = ``;
 
@@ -23,7 +26,7 @@ export class Solution extends BaseSolution {
             occurrences += Object.entries(CARDINAL_VECTORS)
                 .map(([, slope]) => {
                     const str = takeArray(grid.linePointGenerator(slope, originPoint), 4)
-                        .filter(Boolean)
+                        .filter(isDefined)
                         .map((point) => grid.getValue(point))
                         .join('');
 
@@ -56,14 +59,12 @@ export class Solution extends BaseSolution {
             const ne: Point = [x + 1, y - 1];
 
             const str1 = takeArray(grid.linePointGenerator(CARDINAL_VECTORS.SE, nw), 3)
-                .filter(Boolean)
-                .slice(0, 3)
+                .filter(isDefined)
                 .map((p) => grid.getValue(p))
                 .join('');
 
             const str2 = takeArray(grid.linePointGenerator(CARDINAL_VECTORS.SW, ne), 3)
-                .filter(Boolean)
-                .slice(0, 3)
+                .filter(isDefined)
                 .map((p) => grid.getValue(p))
                 .join('');
 
