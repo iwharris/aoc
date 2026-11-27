@@ -1,1 +1,11 @@
-module.exports = require('@iwharris/prettier-config');
+module.exports = {
+    arrowParens: 'always',
+    bracketSpacing: true,
+    endOfLine: 'lf',
+    printWidth: 100,
+    semi: true,
+    singleQuote: true,
+    tabWidth: 4,
+    trailingComma: 'es5',
+    useTabs: false,
+};
