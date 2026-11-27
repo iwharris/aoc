@@ -5,9 +5,10 @@
         "outDir": "dist",
         "resolveJsonModule": true,
         "esModuleInterop": true,
-        "downlevelIteration": true,
         "lib": ["ESNext", "dom"],
 
+        "strict": false,
+        "types": ["node", "jest"],
         "alwaysStrict": true,
 
         "strictNullChecks": true,
