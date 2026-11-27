@@ -5,8 +5,9 @@ class AocRange {
     public readonly start: number;
     public readonly end: number;
 
+    /** Number of integers in this range, counting both ends */
     get length() {
-        return this.end - this.start;
+        return this.end - this.start + 1;
     }
 
     constructor(start: number, end: number) {

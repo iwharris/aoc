@@ -62,3 +62,16 @@ describe(__filename, () => {
         });
     });
 });
+
+describe('NaN handling', () => {
+    it.each([[[NaN]], [[1, NaN, 2]]])('max and min of %j should be NaN', (input) => {
+        expect(fp.max(input)).toBeNaN();
+        expect(fp.min(input)).toBeNaN();
+    });
+});
+
+describe('#toNum', () => {
+    it('should work as a map callback', () => {
+        expect(['10', '11', '12'].map(fp.toNum)).toEqual([10, 11, 12]);
+    });
+});

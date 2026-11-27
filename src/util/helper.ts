@@ -14,7 +14,7 @@ export const getName = (solution: Solution): string => {
 };
 
 export const parseId = (id: string): [number, number] => {
-    const [year, day] = id.split('.').map((s) => parseInt(s));
+    const [, year, day] = (/^(\d{4})\.(\d+)$/.exec(id) ?? []).map(Number);
     if (!year || !day) {
         throw new Error(`Cannot parse ID from "${id}": ID must be in the form YYYY.DD`);
     }

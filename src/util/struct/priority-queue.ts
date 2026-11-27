@@ -205,9 +205,8 @@ export class BinaryHeapPriorityQueue<T> implements PriorityQueue<T> {
         if (this.heap.length === 0) return null;
 
         const result = this.heap[0];
-        const last = this.heap.pop();
-
-        if (!last) throw new Error('Ex');
+        // the length check above guarantees an item, which may be falsy (0, '')
+        const last = this.heap.pop() as T;
 
         if (this.heap.length > 0) {
             this.heap[0] = last;

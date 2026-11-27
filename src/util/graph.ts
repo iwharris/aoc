@@ -48,6 +48,9 @@ export class DirectedGraph<TKey extends NodeKey, TVertexValue = any, TEdgeValue 
 
     removeVertex(key: TKey): void {
         this.vertices.delete(key);
+        // also drop the edges from and to this vertex
+        this.edges.delete(key);
+        this.edges.forEach((neighbors) => neighbors.delete(key));
     }
 
     addEdge(from: TKey, to: TKey, value: TEdgeValue): void {

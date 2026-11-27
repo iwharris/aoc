@@ -1,4 +1,9 @@
-import { BinaryHeapPriorityQueue } from '../../../src/util/struct/priority-queue';
+import {
+    BinaryHeapPriorityQueue,
+    DeprecatedHeapPriorityQueue,
+    SimplePriorityQueue,
+    defaultComparator,
+} from '../../../src/util/struct/priority-queue';
 
 describe('BinaryHeapPriorityQueue', () => {
     describe('with default number comparator', () => {
@@ -148,5 +153,59 @@ describe('BinaryHeapPriorityQueue', () => {
             expect(pq.size).toBe(3);
             expect(pq.peek()).toBe(1);
         });
+    });
+});
+
+describe('BinaryHeapPriorityQueue with falsy items', () => {
+    it('should pop zeros', () => {
+        const pq = new BinaryHeapPriorityQueue<number>();
+        [1, 0, 0].forEach((n) => pq.push(n));
+
+        expect([pq.pop(), pq.pop(), pq.pop(), pq.pop()]).toEqual([0, 0, 1, null]);
+    });
+
+    it('should pop empty strings', () => {
+        const pq = new BinaryHeapPriorityQueue<string>();
+        ['', ''].forEach((s) => pq.push(s));
+
+        expect([pq.pop(), pq.pop()]).toEqual(['', '']);
+    });
+});
+
+describe('SimplePriorityQueue', () => {
+    it('should return the highest priority first, newest first among equals', () => {
+        const pq = new SimplePriorityQueue<string>();
+        expect([pq.isEmpty(), pq.peek(), pq.pop()]).toEqual([true, null, null]);
+
+        pq.push('low', 1);
+        pq.push('high', 5);
+        pq.push('newer high', 5);
+        pq.push('lowest', 0);
+
+        expect([pq.isEmpty(), pq.size, pq.peek()]).toEqual([false, 4, 'newer high']);
+        expect([pq.pop(), pq.pop(), pq.pop(), pq.pop()]).toEqual([
+            'newer high',
+            'high',
+            'low',
+            'lowest',
+        ]);
+    });
+});
+
+describe('DeprecatedHeapPriorityQueue', () => {
+    it('should pop in comparator order', () => {
+        const pq = new DeprecatedHeapPriorityQueue<number>((a, b) => a - b);
+        expect([pq.isEmpty(), pq.peek(), pq.pop()]).toEqual([true, null, null]);
+
+        [5, 1, 4, 0, 3, 2].forEach((n) => pq.push(n));
+
+        expect([pq.size, pq.peek()]).toEqual([6, 0]);
+        expect(Array.from({ length: 6 }, () => pq.pop())).toEqual([0, 1, 2, 3, 4, 5]);
+    });
+});
+
+describe('defaultComparator', () => {
+    it('should reject mixed types', () => {
+        expect(() => defaultComparator(1, 'a')).toThrow('only works with numbers and strings');
     });
 });

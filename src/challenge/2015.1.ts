@@ -30,7 +30,7 @@ export class Solution extends BaseSolution {
     public solvePart1(lines: Input): string {
         const line = lines[0];
         return (
-            countSubstringOccurrences(line, '\\(') - countSubstringOccurrences(line, '\\)')
+            countSubstringOccurrences(line, '(') - countSubstringOccurrences(line, ')')
         ).toString();
     }
 

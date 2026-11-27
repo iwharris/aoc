@@ -47,3 +47,18 @@ describe('math.ts', () => {
         });
     });
 });
+
+describe('signs and large numbers', () => {
+    it.each([
+        [4, -6],
+        [-4, 6],
+        [-4, -6],
+    ])('gcd and lcm of %i and %i should be positive', (a, b) => {
+        expect(gcd(a, b)).toBe(2);
+        expect(lcm(a, b)).toBe(12);
+    });
+
+    it('lcm should stay exact when the product is not a safe integer', () => {
+        expect(lcm(94906267, 94906267)).toBe(94906267);
+    });
+});

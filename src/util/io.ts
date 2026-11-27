@@ -19,6 +19,7 @@ export const readInputFromStdin = (encoding: BufferEncoding = DEFAULT_ENCODING):
     }
 };
 
+/** Falls back to reading stdin if the file can't be read */
 export const readInputFromFile = async (
     path: string,
     encoding: BufferEncoding = DEFAULT_ENCODING
@@ -36,9 +37,9 @@ export const readInputFromFile = async (
 export const importSolutionDynamically = async (path: string): Promise<Solution> => {
     const rawModule = await import(path);
     const RawSolution = rawModule?.default || rawModule?.Solution;
-    const instance = new RawSolution();
-    if (!instance) throw new Error(`Module at path "${path}" is empty`);
-    return instance;
+    if (typeof RawSolution !== 'function')
+        throw new Error(`Module at path "${path}" has no solution`);
+    return new RawSolution();
 };
 
 /**

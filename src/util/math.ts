@@ -8,7 +8,7 @@ export const gcd = (a: number, b: number): number => {
         b = a % b;
         a = temp;
     }
-    return a;
+    return Math.abs(a);
 };
 
 const _lcm = (a: number, b: number): number => {
@@ -16,7 +16,8 @@ const _lcm = (a: number, b: number): number => {
     if (a === 0 || b === 0) return 0;
 
     const gcdValue = gcd(a, b);
-    return (a * b) / gcdValue;
+    // divide first: a * b can exceed Number.MAX_SAFE_INTEGER even when the result doesn't
+    return Math.abs((a / gcdValue) * b);
 };
 
 export const lcm = (...numbers: number[]): number =>

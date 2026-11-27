@@ -7,38 +7,23 @@ export const intersection = <T = any>(a: Set<T>, b: Set<T>): Set<T> =>
 export const difference = <T = any>(a: Set<T>, b: Set<T>): Set<T> =>
     new Set<T>([...a].filter((x) => !b.has(x)));
 
-export const unionMany = <T = any>(sets: Set<T>[]): Set<T> => {
-    const [a, ...others] = sets;
-    others.forEach((otherSet) => {
-        otherSet.forEach((elem) => a.add(elem));
-    });
+/** Union of all the sets, as a new Set */
+export const unionMany = <T = any>(sets: Set<T>[]): Set<T> =>
+    new Set<T>(sets.flatMap((s) => [...s]));
 
-    return a;
-};
+/** Elements present in every set, as a new Set */
+export const intersectMany = <T = any>([first = new Set<T>(), ...others]: Set<T>[]): Set<T> =>
+    new Set<T>([...first].filter((x) => others.every((s) => s.has(x))));
 
-export const intersectMany = <T = any>(sets: Set<T>[]): Set<T> => {
-    const [a, ...others] = sets;
-    others.forEach((otherSet) => {
-        a.forEach((elem) => {
-            if (!otherSet.has(elem)) a.delete(elem);
-        });
-    });
-
-    return a;
-};
-
-export const differMany = <T = any>(sets: Set<T>[]): Set<T> => {
-    const [a, ...others] = sets;
-    others.forEach((otherSet) => {
-        a.forEach((elem) => {
-            if (otherSet.has(elem)) a.delete(elem);
-        });
-    });
-    return a;
-};
+/** Elements of the first set that aren't in any of the others, as a new Set */
+export const differMany = <T = any>([first = new Set<T>(), ...others]: Set<T>[]): Set<T> =>
+    new Set<T>([...first].filter((x) => !others.some((s) => s.has(x))));
 
 /**
  * A utility class for serializing and deserializing an arbitrary object to strings so that we can benefit from set equality checks.
+ *
+ * The default encoder (String) and decoder (JSON.parse) only suit numbers and booleans. For other
+ * types, pass a matching pair, or objects without a toString() will all look equal.
  */
 export class StringifiedSet<T = any> {
     private set: Set<string>;
@@ -48,7 +33,7 @@ export class StringifiedSet<T = any> {
         private decode: (s: string) => T = JSON.parse,
         private encode: (s: T) => string = String
     ) {
-        this.set = new Set(arr.map((s) => String(s)));
+        this.set = new Set(arr.map((s) => this.encode(s)));
     }
 
     decodedSet(): Set<T> {
@@ -69,11 +54,8 @@ export class StringifiedSet<T = any> {
     }
 
     forEach(callbackfn: (value: T, value2: T, set: Set<T>) => void, thisArg?: any): void {
-        this.set.forEach(
-            (value, value2) =>
-                callbackfn(this.decode(value), this.decode(value2), this.decodedSet()),
-            thisArg
-        );
+        const decoded = this.decodedSet();
+        decoded.forEach((value, value2) => callbackfn.call(thisArg, value, value2, decoded));
     }
 
     get size(): number {
