@@ -20,7 +20,10 @@ const getSolution = async (id: string): Promise<Solution> => {
 const getSolutions = async (): Promise<SolutionMap> => {
     const solutionMap = {};
 
-    const modules = await globAsync(`${__dirname}/challenge/*.[tj]s`);
+    // The challenge directory also holds non-solution files such as template.ts
+    const modules = (await globAsync(`${__dirname}/challenge/*.[tj]s`)).filter((modulePath) =>
+        /\/\d{4}\.\d+\.[tj]s$/.test(modulePath)
+    );
 
     for (const modulePath of modules) {
         const solution: Solution = await importSolutionDynamically(modulePath);

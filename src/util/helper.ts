@@ -1,12 +1,13 @@
 import { Solution } from '../types';
 
 export const getName = (solution: Solution): string => {
-    if (!solution.description)
-        throw new Error(`Solution is missing a description: ${JSON.stringify(solution)}`);
-    const matches = /^[\t\n -]*Day \d+:([\w\s]+)[ -]*\n/.exec(solution.description);
+    // Not every solution has had its description filled in
+    if (!solution.description?.trim()) return '(untitled)';
+
+    const matches = /^[\t\n -]*Day \d+:(.*?)[ \t-]*\n/.exec(solution.description);
 
     if (!matches) {
-        throw new Error(`Description is malformed: "${solution.description.slice(100)}..."`);
+        throw new Error(`Description is malformed: "${solution.description.slice(0, 100)}..."`);
     }
 
     return matches[1].trim();
