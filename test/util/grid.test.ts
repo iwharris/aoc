@@ -68,6 +68,89 @@ describe('Grid', () => {
         });
     });
 
+    describe('linePointGenerator', () => {
+        const grid = new Grid(4, 3, '.');
+
+        it('should start at 0,0 by default and stop at the edge', () => {
+            expect(toStrings(grid.linePointGenerator([1, 1]))).toEqual(['0,0', '1,1', '2,2']);
+        });
+
+        it('should follow a negative slope from a given origin', () => {
+            expect(toStrings(grid.linePointGenerator([-2, -1], [3, 2]))).toEqual(['3,2', '1,1']);
+        });
+
+        it('should skip the origin when excludeOrigin is set', () => {
+            const line = grid.linePointGenerator([1, 0], [1, 1], { excludeOrigin: true });
+
+            expect(toStrings(line)).toEqual(['2,1', '3,1']);
+        });
+
+        it('should generate nothing from an out-of-bounds origin', () => {
+            expect(toStrings(grid.linePointGenerator([1, 0], [-1, 0]))).toEqual([]);
+        });
+
+        it('should throw for a zero slope', () => {
+            // only take one point: without the check, the line never ends
+            expect(() => grid.linePointGenerator([0, 0]).next()).toThrow(RangeError);
+        });
+    });
+
+    describe('adjacentPointGenerator', () => {
+        const grid = new Grid(3, 3, '.');
+        const adjacent = (
+            origin: [number, number],
+            options?: { includeOutOfBoundsPoints?: boolean; orthogonalOnly?: boolean }
+        ) => toStrings(grid.adjacentPointGenerator(origin, options)).sort();
+
+        it('should generate all eight neighbors of a center point', () => {
+            expect(adjacent([1, 1])).toEqual(
+                ['0,0', '0,1', '0,2', '1,0', '1,2', '2,0', '2,1', '2,2'].sort()
+            );
+        });
+
+        it('should omit out-of-bounds neighbors by default', () => {
+            expect(adjacent([0, 0])).toEqual(['0,1', '1,0', '1,1']);
+        });
+
+        it('should generate only orthogonal neighbors with orthogonalOnly', () => {
+            expect(adjacent([1, 1], { orthogonalOnly: true })).toEqual(
+                ['0,1', '1,0', '1,2', '2,1'].sort()
+            );
+        });
+
+        it('should include out-of-bounds neighbors when asked', () => {
+            expect(adjacent([0, 0], { includeOutOfBoundsPoints: true })).toEqual(
+                ['-1,-1', '-1,0', '-1,1', '0,-1', '0,1', '1,-1', '1,0', '1,1'].sort()
+            );
+        });
+
+        it('should combine both options', () => {
+            const options = { includeOutOfBoundsPoints: true, orthogonalOnly: true };
+
+            expect(adjacent([0, 0], options)).toEqual(['-1,0', '0,-1', '0,1', '1,0'].sort());
+        });
+    });
+
+    describe('pointGenerator', () => {
+        const grid = new Grid(3, 2, '.');
+
+        it('should iterate down by default', () => {
+            expect(toStrings(grid.pointGenerator())).toEqual([
+                ...['0,0', '1,0', '2,0'],
+                ...['0,1', '1,1', '2,1'],
+            ]);
+        });
+
+        it.each([
+            ['down', ['0,0', '1,0', '2,0', '0,1', '1,1', '2,1']],
+            ['up', ['0,1', '1,1', '2,1', '0,0', '1,0', '2,0']],
+            ['right', ['0,0', '0,1', '1,0', '1,1', '2,0', '2,1']],
+            ['left', ['2,0', '2,1', '1,0', '1,1', '0,0', '0,1']],
+        ] as const)('should iterate %s in order', (direction, expected) => {
+            expect(toStrings(grid.pointGenerator({ direction }))).toEqual(expected);
+        });
+    });
+
     describe('floodFillGenerator', () => {
         it('should fill a large region without overflowing the stack', () => {
             const grid = new Grid(200, 200, '.');
@@ -132,6 +215,23 @@ describe('Grid', () => {
                 '1,1',
                 '0,1',
             ]);
+        });
+
+        it('should generate a vertical line in either direction', () => {
+            expect(toStrings(grid.cardinalDirectionLineGenerator([1, 0], [1, 2]))).toEqual([
+                '1,0',
+                '1,1',
+                '1,2',
+            ]);
+            expect(toStrings(grid.cardinalDirectionLineGenerator([1, 2], [1, 0]))).toEqual([
+                '1,2',
+                '1,1',
+                '1,0',
+            ]);
+        });
+
+        it('should generate a single point when both endpoints match', () => {
+            expect(toStrings(grid.cardinalDirectionLineGenerator([2, 3], [2, 3]))).toEqual(['2,3']);
         });
 
         it('should throw for a diagonal line', () => {

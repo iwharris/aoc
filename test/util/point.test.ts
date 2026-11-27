@@ -1,4 +1,15 @@
-import { Point2DTuple, Point2D } from '../../src/util/point';
+import {
+    Point2DTuple,
+    Point2D,
+    adjacencyGeneratorNDimension,
+    addPoints,
+    copyPoint,
+    isAdjacent,
+    isEqual,
+    rotatePointClockwise,
+    rotatePointCounterclockwise,
+    translatePoint,
+} from '../../src/util/point';
 
 describe('Point2D', () => {
     describe('constructor', () => {
@@ -247,5 +258,81 @@ describe('Point2D', () => {
             expect(point.x).toBe(-13);
             expect(point.y).toBe(-11);
         });
+    });
+});
+
+describe('tuple helpers', () => {
+    it('copyPoint should return an independent copy', () => {
+        const point: Point2DTuple = [1, 2];
+        const copy = copyPoint(point);
+
+        expect(copy).toEqual([1, 2]);
+        expect(copy).not.toBe(point);
+    });
+
+    it('translatePoint should mutate and return the same point', () => {
+        const point: Point2DTuple = [1, 2];
+
+        expect(translatePoint(point, [3, 4])).toBe(point);
+        expect(point).toEqual([4, 6]);
+
+        translatePoint(point, [3, 4], -2);
+        expect(point).toEqual([-2, -2]);
+    });
+
+    it('addPoints should return a new point and leave the input alone', () => {
+        const point: Point2DTuple = [1, 2];
+
+        expect(addPoints(point, [3, 4])).toEqual([4, 6]);
+        expect(addPoints(point, [3, 4], 2)).toEqual([7, 10]);
+        expect(point).toEqual([1, 2]);
+    });
+
+    it.each([
+        [0, 0, true],
+        [1, 0, true],
+        [-1, 1, true],
+        [2, 0, false],
+        [0, -2, false],
+        [1, 100, false],
+    ])('isAdjacent of the origin and (%i, %i) should be %s', (x, y, expected) => {
+        expect(isAdjacent([0, 0], [x, y])).toBe(expected);
+        expect(isAdjacent([x, y], [0, 0])).toBe(expected);
+    });
+
+    it('isEqual should require both coordinates to match', () => {
+        expect(isEqual([1, 2], [1, 2])).toBe(true);
+        expect(isEqual([1, 2], [1, 3])).toBe(false);
+        expect(isEqual([1, 2], [0, 2])).toBe(false);
+    });
+
+    // Rotation assumes y points up
+    it.each([
+        ['rotatePointClockwise', rotatePointClockwise, [2, -1]],
+        ['rotatePointCounterclockwise', rotatePointCounterclockwise, [-2, 1]],
+    ])('%s should mutate and return the same point', (_name, rotate, expected) => {
+        const point: Point2DTuple = [1, 2];
+
+        expect(rotate(point)).toBe(point);
+        expect(point).toEqual(expected);
+    });
+});
+
+describe('adjacencyGeneratorNDimension', () => {
+    it.each([
+        [[5], 2],
+        [[5, -3], 8],
+        [[5, -3, 0], 26],
+        [[5, -3, 0, 7], 80],
+    ])('should generate every neighbor of %j exactly once', (origin, count) => {
+        const neighbors = [...adjacencyGeneratorNDimension(origin)];
+
+        expect(neighbors).toHaveLength(count);
+        expect(new Set(neighbors.map(String)).size).toBe(count);
+        expect(neighbors.map(String)).not.toContain(String(origin));
+        for (const neighbor of neighbors) {
+            expect(neighbor).toHaveLength(origin.length);
+            neighbor.forEach((v, i) => expect(Math.abs(v - origin[i])).toBeLessThanOrEqual(1));
+        }
     });
 });
