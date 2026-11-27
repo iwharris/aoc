@@ -1,6 +1,6 @@
 import { BaseSolution } from '../solution';
 import { Input } from '../types';
-import { CARDINAL_VECTORS, CardinalDirection, Grid, rotateDirection } from '../util/grid';
+import { CARDINAL_VECTORS, OrthogonalDirection, Grid, rotateDirection } from '../util/grid';
 import { translatePoint } from '../util/point';
 import { copyPoint, Point } from '../util/point';
 
@@ -10,7 +10,7 @@ type Tile = '#' | '.';
 const simulateVisitedCells = (
     grid: GuardGrid,
     initialGuardPosition: Point,
-    initialGuardDirection: CardinalDirection
+    initialGuardDirection: OrthogonalDirection
 ): Set<string> => {
     let pos = initialGuardPosition;
     let dir = initialGuardDirection;
@@ -63,7 +63,7 @@ export class Solution extends BaseSolution {
 
     public solvePart1(lines: Input): string {
         const [grid, guardPosition] = parseGrid(lines);
-        const guardDirection: CardinalDirection = 'N';
+        const guardDirection: OrthogonalDirection = 'N';
 
         const visited = simulateVisitedCells(grid, guardPosition, guardDirection);
         return visited.size.toString();
@@ -71,7 +71,7 @@ export class Solution extends BaseSolution {
 
     public solvePart2(lines: Input): string {
         const [grid, initialGuardPosition] = parseGrid(lines);
-        const initialGuardDirection: CardinalDirection = 'N';
+        const initialGuardDirection: OrthogonalDirection = 'N';
 
         const initialVisited = simulateVisitedCells(
             grid,
@@ -82,7 +82,7 @@ export class Solution extends BaseSolution {
         // initialVisited now contains all the points where we can place an obstacle
         initialVisited.delete(initialGuardPosition.join(','));
 
-        const visit = (set: Set<string>, pt: Point, dir: CardinalDirection): boolean => {
+        const visit = (set: Set<string>, pt: Point, dir: OrthogonalDirection): boolean => {
             // console.log(`visited ${pt}`);
             const key = [...pt, dir].join(',');
             if (set.has(key)) {
@@ -104,7 +104,7 @@ export class Solution extends BaseSolution {
             grid.set(obstaclePoint as Point, '#');
 
             let pos: Point = [...initialGuardPosition];
-            let dir: CardinalDirection = initialGuardDirection;
+            let dir: OrthogonalDirection = initialGuardDirection;
             const set = new Set<string>();
 
             // console.log('setting obstacle at ', obstaclePoint);

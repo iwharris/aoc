@@ -2,7 +2,7 @@ import { BaseSolution } from '../solution';
 import { Input } from '../types';
 import {
     CARDINAL_VECTORS,
-    CardinalDirection,
+    OrthogonalDirection,
     Grid,
     isPointEqual,
     rotateDirection,
@@ -28,7 +28,7 @@ export class Solution extends BaseSolution {
 }
 
 // Total heat (weight), current position, facing direction, num steps taken in this direction
-type State = [number, Point, CardinalDirection, number];
+type State = [number, Point, OrthogonalDirection, number];
 
 const solve = (g: Grid<number>, minSteps: number, maxSteps: number): number => {
     // dijkstra implementation

@@ -1,8 +1,8 @@
-import { assert } from 'console';
 import { Point, Point2D, PointLike, Vector2DTuple } from './point';
 import { StringifiedSet } from './set';
 
-export type CardinalDirection = 'N' | 'E' | 'W' | 'S' | 'NW' | 'NE' | 'SE' | 'SW';
+export type OrthogonalDirection = 'N' | 'E' | 'W' | 'S';
+export type CardinalDirection = OrthogonalDirection | 'NW' | 'NE' | 'SE' | 'SW';
 export const CARDINAL_VECTORS: Record<CardinalDirection, Vector2DTuple> = {
     N: [0, -1],
     E: [1, 0],
@@ -15,18 +15,21 @@ export const CARDINAL_VECTORS: Record<CardinalDirection, Vector2DTuple> = {
 };
 
 // Ordered array of directions, used to calculate rotations
-const DIRECTION_ROTATIONS: readonly CardinalDirection[] = ['N', 'E', 'S', 'W'];
+const DIRECTION_ROTATIONS: readonly OrthogonalDirection[] = ['N', 'E', 'S', 'W'];
 
+/** Rotates by 90 degrees. Diagonal directions aren't supported. */
 export const rotateDirection = (
-    dir: CardinalDirection,
+    dir: OrthogonalDirection,
     rotation: 'CW' | 'CCW'
-): CardinalDirection =>
-    DIRECTION_ROTATIONS[
-        (DIRECTION_ROTATIONS.indexOf(dir) +
-            DIRECTION_ROTATIONS.length +
-            (rotation === 'CW' ? 1 : -1)) %
+): OrthogonalDirection => {
+    const index = DIRECTION_ROTATIONS.indexOf(dir);
+    if (index === -1) throw new RangeError(`Can't rotate direction ${dir}`);
+
+    return DIRECTION_ROTATIONS[
+        (index + DIRECTION_ROTATIONS.length + (rotation === 'CW' ? 1 : -1)) %
             DIRECTION_ROTATIONS.length
     ];
+};
 
 export const isPointEqual = (a: Point, b: Point) => a[0] === b[0] && a[1] === b[1];
 
@@ -141,10 +144,8 @@ export class Grid<V = any> {
         [x0, y0]: PointLike,
         [x1, y1]: PointLike
     ): Generator<Point> {
-        assert(
-            x0 === x1 || y0 === y1,
-            'Endpoints of cardinal line must have the same x or y value'
-        );
+        if (x0 !== x1 && y0 !== y1)
+            throw new RangeError('Endpoints of cardinal line must have the same x or y value');
 
         if (x0 === x1 && y0 === y1) {
             yield [x0, y0];
@@ -239,14 +240,15 @@ export class Grid<V = any> {
     }
 
     public *pointsInRow(row: number): Generator<Point> {
-        assert(row >= 0 && row < this.height);
+        if (row < 0 || row >= this.height) throw new RangeError(`Row ${row} is out of bounds`);
         for (let x = 0; x < this.width; x++) {
             yield [x, row];
         }
     }
 
     public *pointsInColumn(column: number): Generator<Point> {
-        assert(column >= 0 && column < this.height);
+        if (column < 0 || column >= this.width)
+            throw new RangeError(`Column ${column} is out of bounds`);
         for (let y = 0; y < this.height; y++) {
             yield [column, y];
         }
@@ -255,48 +257,30 @@ export class Grid<V = any> {
     /** Visits every point that is connected to the origin by a path of adjacent points with the same value. */
     public *floodFillGenerator(
         [originX, originY]: PointLike,
-        opts: { includeDiagonal?: boolean; isEqual?: (val1: V, val2: V) => boolean } = {
-            includeDiagonal: true,
-        }
+        opts: { includeDiagonal?: boolean; isEqual?: (val1: V, val2: V) => boolean } = {}
     ): Generator<Point2D> {
-        const visited = new StringifiedSet<Point2D>([], Point2D.fromString);
-        const queue: Point2D[] = [];
+        const { includeDiagonal = true, isEqual = (a: V, b: V) => a === b } = opts;
+        const origin = new Point2D(originX, originY);
+        const visited = new StringifiedSet<Point2D>([origin], Point2D.fromString);
+        const queue: Point2D[] = [origin];
 
-        // Recursively visit all adjacent points with the same value and add them to the queue
-        const visit = (point: Point2D): void => {
-            if (!visited.has(point)) {
-                visited.add(point);
-                queue.push(point);
+        // The queue grows while we walk it. This avoids recursion, which overflows on large regions.
+        for (let i = 0; i < queue.length; i++) {
+            const point = queue[i];
+            const value = this.getValue(point);
 
-                const thisVal = this.getValue(point);
-
-                for (const adjacentPoint of this.adjacentPointGenerator(point, {
-                    orthogonalOnly: !opts.includeDiagonal,
-                })) {
-                    const p2d = Point2D.fromTuple(adjacentPoint);
-                    if (!visited.has(p2d)) {
-                        // Haven't visited this one yet; look at value
-                        const adjacentValue = this.getValue(p2d);
-
-                        if (
-                            opts.isEqual
-                                ? opts.isEqual(thisVal, adjacentValue)
-                                : thisVal === adjacentValue
-                        ) {
-                            // If the value is the same, visit it
-                            visit(p2d);
-                        }
-                    }
+            for (const adjacentPoint of this.adjacentPointGenerator(point, {
+                orthogonalOnly: !includeDiagonal,
+            })) {
+                const p2d = Point2D.fromTuple(adjacentPoint);
+                if (!visited.has(p2d) && isEqual(value, this.getValue(p2d))) {
+                    visited.add(p2d);
+                    queue.push(p2d);
                 }
             }
-        };
-
-        // Start the flood fill
-        visit(new Point2D(originX, originY));
-
-        for (const p of queue) {
-            yield p;
         }
+
+        yield* queue;
     }
 
     /**
