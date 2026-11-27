@@ -152,6 +152,30 @@ describe('Point2D', () => {
             expect(point2.isAdjacentToCardinal(point1)).toBe(false);
         });
 
+        it.each([
+            [1, 100],
+            [100, 1],
+            [-1, 5],
+            [2, 1],
+        ])('does not consider (%i, %i) adjacent to the origin', (x, y) => {
+            const origin = new Point2D(0, 0);
+            const point = new Point2D(x, y);
+
+            expect(origin.isAdjacentTo(point)).toBe(false);
+            expect(point.isAdjacentTo(origin)).toBe(false);
+        });
+
+        it('considers all eight neighbors adjacent', () => {
+            const center = new Point2D(5, 5);
+
+            for (const dx of [-1, 0, 1]) {
+                for (const dy of [-1, 0, 1]) {
+                    if (dx === 0 && dy === 0) continue;
+                    expect(center.isAdjacentTo(new Point2D(5 + dx, 5 + dy))).toBe(true);
+                }
+            }
+        });
+
         it('rotates the point around the origin', () => {
             const point = new Point2D(1, 1);
 

@@ -114,7 +114,7 @@ export class Point2D implements ArrayLike<number>, Iterable<number> {
      * Does not consider the same 2 points to be adjacent.
      */
     isAdjacentTo(pt: Point2D): boolean {
-        return Math.abs(this.x - pt.x) === 1 || Math.abs(this.y - pt.y) === 1;
+        return Math.max(Math.abs(this.x - pt.x), Math.abs(this.y - pt.y)) === 1;
     }
 
     /**
