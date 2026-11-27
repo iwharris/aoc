@@ -49,7 +49,14 @@ export class Grid<V = any> {
     }
 
     public isInBounds([x, y]: PointLike): boolean {
-        return x >= 0 && x < this.width && y >= 0 && y < this.height;
+        return (
+            Number.isInteger(x) &&
+            Number.isInteger(y) &&
+            x >= 0 &&
+            x < this.width &&
+            y >= 0 &&
+            y < this.height
+        );
     }
 
     public set(point: PointLike, value: V): void {
@@ -77,7 +84,8 @@ export class Grid<V = any> {
     }
 
     public indexOf(value: V, fromIndex?: number): number | null {
-        return this.grid.indexOf(value, fromIndex);
+        const index = this.grid.indexOf(value, fromIndex);
+        return index === -1 ? null : index;
     }
 
     public *rectPointGenerator(
@@ -99,12 +107,12 @@ export class Grid<V = any> {
     public *edgePointGenerator(): Generator<Point> {
         for (let x = 0; x < this.width; x += 1) {
             yield [x, 0];
-            yield [x, this.height - 1];
+            if (this.height > 1) yield [x, this.height - 1];
         }
 
         for (let y = 1; y < this.height - 1; y += 1) {
             yield [0, y];
-            yield [this.width - 1, y];
+            if (this.width > 1) yield [this.width - 1, y];
         }
     }
 
@@ -296,9 +304,8 @@ export class Grid<V = any> {
         thisArg?: any
     ): Grid<T> {
         const newGrid = new Grid<T>(this.width, this.height);
-        newGrid.grid = this.grid.map<T>(
-            (v, idx, arr) => callbackFn(v, this.getPointFromIndex(idx), arr),
-            thisArg
+        newGrid.grid = this.grid.map<T>((v, idx, arr) =>
+            callbackFn.call(thisArg, v, this.getPointFromIndex(idx), arr)
         );
         return newGrid;
     }
@@ -326,7 +333,7 @@ export class Grid<V = any> {
      * @param callbackFn
      * @param thisArg
      */
-    forEach(callbackFn: (value: V, index: number, array: V[]) => unknown, thisArg: any): void {
+    forEach(callbackFn: (value: V, index: number, array: V[]) => unknown, thisArg?: any): void {
         this.grid.forEach(callbackFn, thisArg);
     }
 

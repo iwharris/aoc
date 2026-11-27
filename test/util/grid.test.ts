@@ -5,6 +5,69 @@ const toStrings = (points: Iterable<PointLike>): string[] =>
     [...points].map((p) => `${p[0]},${p[1]}`);
 
 describe('Grid', () => {
+    describe('bounds', () => {
+        it.each([
+            [0.5, 0],
+            [0, 1.5],
+            [NaN, 0],
+        ])('should treat non-integer point (%d, %d) as out of bounds', (x, y) => {
+            const grid = new Grid(2, 2, 0);
+
+            expect(grid.isInBounds([x, y])).toBe(false);
+            expect(() => grid.getValue([x, y])).toThrow(RangeError);
+            expect(() => grid.set([x, y], 1)).toThrow(RangeError);
+        });
+    });
+
+    describe('indexOf', () => {
+        const grid = Grid.loadFromStrings(['ab', 'cd']);
+
+        it('should return the index of a value, including index zero', () => {
+            expect(grid.indexOf('a')).toBe(0);
+            expect(grid.indexOf('d')).toBe(3);
+        });
+
+        it('should return null for a missing value', () => {
+            expect(grid.indexOf('z')).toBeNull();
+        });
+    });
+
+    describe('forEach', () => {
+        it('should visit every cell without needing a thisArg', () => {
+            const visited: string[] = [];
+
+            Grid.loadFromStrings(['ab', 'cd']).forEach((value) => visited.push(value));
+
+            expect(visited).toEqual(['a', 'b', 'c', 'd']);
+        });
+    });
+
+    describe('map', () => {
+        it('should call the callback with thisArg as this', () => {
+            const mapped = new Grid(1, 1, 2).map(
+                function (this: { factor: number }, value) {
+                    return value * this.factor;
+                },
+                { factor: 10 }
+            );
+
+            expect(mapped.grid).toEqual([20]);
+        });
+    });
+
+    describe('edgePointGenerator', () => {
+        it.each([
+            [3, 1, ['0,0', '1,0', '2,0']],
+            [1, 3, ['0,0', '0,1', '0,2']],
+            [1, 1, ['0,0']],
+            [3, 3, ['0,0', '0,1', '0,2', '1,0', '1,2', '2,0', '2,1', '2,2']],
+        ])('should visit each edge point of a %ix%i grid once', (width, height, expected) => {
+            const edges = toStrings(new Grid(width, height, 0).edgePointGenerator());
+
+            expect(edges.sort()).toEqual(expected);
+        });
+    });
+
     describe('floodFillGenerator', () => {
         it('should fill a large region without overflowing the stack', () => {
             const grid = new Grid(200, 200, '.');

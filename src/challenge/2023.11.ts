@@ -55,7 +55,7 @@ const parsePairsFromGalaxy = (lines: Input, expansionFactor: number): [Point, Po
             ]);
             points.push(newPt);
         }
-    }, originalGrid);
+    });
 
     const pairs: [Point, Point][] = [];
     for (let i = 0; i < points.length; i++) {

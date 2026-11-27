@@ -130,11 +130,9 @@ export const manhattanDistance = ([x1, y1]: PointLike, [x2, y2]: PointLike): num
     return Math.abs(x1 - x2) + Math.abs(y1 - y2);
 };
 
-export const copyPoint = (p: Point2DTuple): Point2DTuple => [
-    p[0],
-    p[1],
-]; /** Mutates a Point, moving it by some x,y offset. Returns the same Point. */
+export const copyPoint = (p: Point2DTuple): Point2DTuple => [p[0], p[1]];
 
+/** Mutates a Point, moving it by some x,y offset. Returns the same Point. */
 export const translatePoint = (
     p: Point2DTuple,
     distance: Vector2DTuple,
@@ -143,38 +141,49 @@ export const translatePoint = (
     p[0] += distance[0] * magnitude;
     p[1] += distance[1] * magnitude;
     return p;
-}; /** Similar to translatePoint but returns a new Point */
+};
 
+/** Similar to translatePoint but returns a new Point */
 export const addPoints = (
     p: Point2DTuple,
     distance: Vector2DTuple,
     magnitude = 1
 ): Point2DTuple => {
     return translatePoint(copyPoint(p), distance, magnitude);
-}; /** Returns true if two Points are adjacent diagonally or in the four cardinal directions */
+};
 
+/**
+ * Returns true if two Points are adjacent diagonally or in the four cardinal directions.
+ * Identical Points also count as adjacent, unlike Point2D.isAdjacentTo.
+ */
 export const isAdjacent = (p0: Point, p1: Point): boolean =>
-    Math.abs(p0[0] - p1[0]) <= 1 &&
-    Math.abs(p0[1] - p1[1]) <= 1; /** Checks that two Points are identical coordinates */
+    Math.abs(p0[0] - p1[0]) <= 1 && Math.abs(p0[1] - p1[1]) <= 1;
 
-export const isEqual = (p0: Point, p1: Point): boolean =>
-    p0[0] === p1[0] &&
-    p0[1] ===
-        p1[1]; /** Mutates a Point, rotating it clockwise 90 degrees around an optional origin. Returns the same Point. */
+/** Checks that two Points are identical coordinates */
+export const isEqual = (p0: Point, p1: Point): boolean => p0[0] === p1[0] && p0[1] === p1[1];
 
+/**
+ * Mutates a Point, rotating it clockwise 90 degrees around (0,0). Returns the same Point.
+ * Assumes y points up; on Grid coordinates (y points down) this turns counterclockwise.
+ */
 export const rotatePointClockwise = (p: Point2DTuple): Point2DTuple => {
     const [x, y] = p;
     p[0] = y;
     p[1] = -x;
     return p;
-}; /** Mutates a Point, rotating it counterclockwise 90 degrees around an optional origin. Returns the same Point. */
+};
 
+/**
+ * Mutates a Point, rotating it counterclockwise 90 degrees around (0,0). Returns the same Point.
+ * Assumes y points up; on Grid coordinates (y points down) this turns clockwise.
+ */
 export const rotatePointCounterclockwise = (p: Point2DTuple): Point2DTuple => {
     const [x, y] = p;
     p[0] = -y;
     p[1] = x;
     return p;
 };
+
 export function* adjacencyGenerator3D(point: Point3DTuple): Generator<Point3DTuple> {
     for (let z = -1; z <= 1; z++) {
         for (let y = -1; y <= 1; y++) {
